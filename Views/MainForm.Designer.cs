@@ -33,6 +33,7 @@
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             panelDashboard = new Panel();
+            lblTotalTime = new Label();
             chartDashboard = new System.Windows.Forms.DataVisualization.Charting.Chart();
             panelHistory = new Panel();
             panelSettings = new Panel();
@@ -49,6 +50,7 @@
             // 
             // panelDashboard
             // 
+            panelDashboard.Controls.Add(lblTotalTime);
             panelDashboard.Controls.Add(chartDashboard);
             panelDashboard.Dock = DockStyle.Fill;
             panelDashboard.Location = new Point(0, 0);
@@ -56,20 +58,32 @@
             panelDashboard.Size = new Size(800, 450);
             panelDashboard.TabIndex = 0;
             // 
+            // lblTotalTime
+            // 
+            lblTotalTime.AutoSize = true;
+            lblTotalTime.BackColor = Color.White;
+            lblTotalTime.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblTotalTime.ForeColor = Color.Black;
+            lblTotalTime.Location = new Point(12, 57);
+            lblTotalTime.Name = "lblTotalTime";
+            lblTotalTime.Size = new Size(177, 20);
+            lblTotalTime.TabIndex = 1;
+            lblTotalTime.Text = "Total Time Today: 0 min";
+            // 
             // chartDashboard
             // 
             chartArea1.Name = "ChartArea1";
             chartDashboard.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             chartDashboard.Legends.Add(legend1);
-            chartDashboard.Location = new Point(30, 81);
+            chartDashboard.Location = new Point(0, 31);
             chartDashboard.Name = "chartDashboard";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             chartDashboard.Series.Add(series1);
-            chartDashboard.Size = new Size(480, 253);
+            chartDashboard.Size = new Size(800, 419);
             chartDashboard.TabIndex = 0;
             chartDashboard.Text = "chart1";
             // 
@@ -147,6 +161,7 @@
             Name = "MainForm";
             Text = "TaskForge";
             panelDashboard.ResumeLayout(false);
+            panelDashboard.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)chartDashboard).EndInit();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
@@ -166,5 +181,6 @@
         private Microsoft.Data.Sqlite.SqliteCommand sqliteCommand1;
         private System.Windows.Forms.DataVisualization.Charting.Chart chartDashboard;
         private System.Windows.Forms.Timer timerRefresh;
+        private Label lblTotalTime;
     }
 }
