@@ -13,6 +13,17 @@ namespace TaskForge.Views
         public MainForm()
         {
             InitializeComponent();
+            LoadChartData();
+            timerRefresh.Start();
+        }
+
+        private void LoadChartData()
+        {
+            chartDashboard.Series[0].Points.Clear();
+
+            chartDashboard.Series[0].Points.AddXY("Chrome", 120);
+            chartDashboard.Series[0].Points.AddXY("VS Code", 90);
+            chartDashboard.Series[0].Points.AddXY("YouTube", 60);
         }
 
         private void dashboardToolStripMenuItem_Click(object sender, EventArgs e)
@@ -36,6 +47,9 @@ namespace TaskForge.Views
             panelSettings.Visible = true;
         }
 
-        
+        private void timerRefresh_Tick(object sender, EventArgs e)
+        {
+            LoadChartData(); // refresh chart
+        }
     }
 }

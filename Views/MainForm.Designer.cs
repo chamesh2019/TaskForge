@@ -28,24 +28,50 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             panelDashboard = new Panel();
+            chartDashboard = new System.Windows.Forms.DataVisualization.Charting.Chart();
             panelHistory = new Panel();
             panelSettings = new Panel();
             menuStrip1 = new MenuStrip();
             dashboardToolStripMenuItem = new ToolStripMenuItem();
             historyToolStripMenuItem = new ToolStripMenuItem();
             settingsToolStripMenuItem = new ToolStripMenuItem();
-            panelSettings.SuspendLayout();
+            sqliteCommand1 = new Microsoft.Data.Sqlite.SqliteCommand();
+            timerRefresh = new System.Windows.Forms.Timer(components);
+            panelDashboard.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)chartDashboard).BeginInit();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // panelDashboard
             // 
+            panelDashboard.Controls.Add(chartDashboard);
             panelDashboard.Dock = DockStyle.Fill;
             panelDashboard.Location = new Point(0, 0);
             panelDashboard.Name = "panelDashboard";
             panelDashboard.Size = new Size(800, 450);
             panelDashboard.TabIndex = 0;
+            // 
+            // chartDashboard
+            // 
+            chartArea1.Name = "ChartArea1";
+            chartDashboard.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            chartDashboard.Legends.Add(legend1);
+            chartDashboard.Location = new Point(30, 81);
+            chartDashboard.Name = "chartDashboard";
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            chartDashboard.Series.Add(series1);
+            chartDashboard.Size = new Size(480, 253);
+            chartDashboard.TabIndex = 0;
+            chartDashboard.Text = "chart1";
             // 
             // panelHistory
             // 
@@ -58,14 +84,12 @@
             // 
             // panelSettings
             // 
-           
             panelSettings.Dock = DockStyle.Fill;
             panelSettings.Location = new Point(0, 0);
             panelSettings.Name = "panelSettings";
             panelSettings.Size = new Size(800, 450);
             panelSettings.TabIndex = 2;
             panelSettings.Visible = false;
-            
             // 
             // menuStrip1
             // 
@@ -76,7 +100,6 @@
             menuStrip1.Size = new Size(800, 28);
             menuStrip1.TabIndex = 0;
             menuStrip1.Text = "menuStrip1";
-            menuStrip1.Dock = DockStyle.Top;
             // 
             // dashboardToolStripMenuItem
             // 
@@ -99,6 +122,18 @@
             settingsToolStripMenuItem.Text = "Settings";
             settingsToolStripMenuItem.Click += settingsToolStripMenuItem_Click;
             // 
+            // sqliteCommand1
+            // 
+            sqliteCommand1.CommandTimeout = 30;
+            sqliteCommand1.Connection = null;
+            sqliteCommand1.Transaction = null;
+            sqliteCommand1.UpdatedRowSource = System.Data.UpdateRowSource.None;
+            // 
+            // timerRefresh
+            // 
+            timerRefresh.Interval = 5000;
+            timerRefresh.Tick += timerRefresh_Tick;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -110,12 +145,13 @@
             Controls.Add(panelSettings);
             MainMenuStrip = menuStrip1;
             Name = "MainForm";
-            Text = "MainForm";
-            panelSettings.ResumeLayout(false);
-            panelSettings.PerformLayout();
+            Text = "TaskForge";
+            panelDashboard.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)chartDashboard).EndInit();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -127,5 +163,8 @@
         private ToolStripMenuItem dashboardToolStripMenuItem;
         private ToolStripMenuItem historyToolStripMenuItem;
         private ToolStripMenuItem settingsToolStripMenuItem;
+        private Microsoft.Data.Sqlite.SqliteCommand sqliteCommand1;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chartDashboard;
+        private System.Windows.Forms.Timer timerRefresh;
     }
 }
