@@ -36,6 +36,10 @@
             lblTotalTime = new Label();
             chartDashboard = new System.Windows.Forms.DataVisualization.Charting.Chart();
             panelHistory = new Panel();
+            dataGridHistory = new DataGridView();
+            panelFilters = new Panel();
+            cmbApplication = new ComboBox();
+            lblApplication = new Label();
             panelSettings = new Panel();
             menuStrip1 = new MenuStrip();
             dashboardToolStripMenuItem = new ToolStripMenuItem();
@@ -45,6 +49,9 @@
             timerRefresh = new System.Windows.Forms.Timer(components);
             panelDashboard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)chartDashboard).BeginInit();
+            panelHistory.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridHistory).BeginInit();
+            panelFilters.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -89,12 +96,56 @@
             // 
             // panelHistory
             // 
+            panelHistory.Controls.Add(dataGridHistory);
+            panelHistory.Controls.Add(panelFilters);
             panelHistory.Dock = DockStyle.Fill;
             panelHistory.Location = new Point(0, 0);
             panelHistory.Name = "panelHistory";
             panelHistory.Size = new Size(800, 450);
             panelHistory.TabIndex = 1;
             panelHistory.Visible = false;
+            // 
+            // dataGridHistory
+            // 
+            dataGridHistory.AllowUserToAddRows = false;
+            dataGridHistory.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridHistory.Dock = DockStyle.Fill;
+            dataGridHistory.Location = new Point(0, 80);
+            dataGridHistory.Name = "dataGridHistory";
+            dataGridHistory.ReadOnly = true;
+            dataGridHistory.RowHeadersWidth = 51;
+            dataGridHistory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridHistory.Size = new Size(800, 370);
+            dataGridHistory.TabIndex = 0;
+            // 
+            // panelFilters
+            // 
+            panelFilters.Controls.Add(cmbApplication);
+            panelFilters.Controls.Add(lblApplication);
+            panelFilters.Dock = DockStyle.Top;
+            panelFilters.Location = new Point(0, 0);
+            panelFilters.Name = "panelFilters";
+            panelFilters.Size = new Size(800, 80);
+            panelFilters.TabIndex = 0;
+            // 
+            // cmbApplication
+            // 
+            cmbApplication.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbApplication.FormattingEnabled = true;
+            cmbApplication.Location = new Point(107, 35);
+            cmbApplication.Name = "cmbApplication";
+            cmbApplication.Size = new Size(180, 28);
+            cmbApplication.TabIndex = 1;
+            cmbApplication.SelectedIndexChanged += cmbApplication_SelectedIndexChanged;
+            // 
+            // lblApplication
+            // 
+            lblApplication.AutoSize = true;
+            lblApplication.Location = new Point(12, 38);
+            lblApplication.Name = "lblApplication";
+            lblApplication.Size = new Size(89, 20);
+            lblApplication.TabIndex = 0;
+            lblApplication.Text = "Application:";
             // 
             // panelSettings
             // 
@@ -154,7 +205,6 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(menuStrip1);
-            Controls.Add(panelDashboard);
             Controls.Add(panelHistory);
             Controls.Add(panelSettings);
             MainMenuStrip = menuStrip1;
@@ -163,6 +213,10 @@
             panelDashboard.ResumeLayout(false);
             panelDashboard.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)chartDashboard).EndInit();
+            panelHistory.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dataGridHistory).EndInit();
+            panelFilters.ResumeLayout(false);
+            panelFilters.PerformLayout();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ResumeLayout(false);
@@ -182,5 +236,9 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart chartDashboard;
         private System.Windows.Forms.Timer timerRefresh;
         private Label lblTotalTime;
+        private DataGridView dataGridHistory;
+        private Panel panelFilters;
+        private ComboBox cmbApplication;
+        private Label lblApplication;
     }
 }

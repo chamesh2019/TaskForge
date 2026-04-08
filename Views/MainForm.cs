@@ -10,6 +10,7 @@ using TaskForge.Data;
 using TaskForge.Tracking;
 using System.Linq;
 using System.Diagnostics;
+using Microsoft.Data.Sqlite;
 
 namespace TaskForge.Views
 {
@@ -34,6 +35,9 @@ namespace TaskForge.Views
             _tracker.Start();
 
             LoadChartData();
+
+            LoadApplicationFilter();
+
             timerRefresh.Start();
         }
 
@@ -44,11 +48,13 @@ namespace TaskForge.Views
             panelSettings.Visible = false;
         }
 
-        private void historyToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void historyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             panelDashboard.Visible = false;
             panelHistory.Visible = true;
             panelSettings.Visible = false;
+
+            await LoadHistoryDataAsync(cmbApplication.Text); // refresh history data when opened
         }
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -75,7 +81,7 @@ namespace TaskForge.Views
             var appTimes = sessions
                 .GroupBy(s => s.ApplicationName)
                 .ToDictionary(
-                    g => g.Key, 
+                    g => g.Key,
                     g => g.Sum(s => s.Duration.TotalMinutes)
                 );
             return appTimes;
@@ -94,7 +100,7 @@ namespace TaskForge.Views
 
             double total = 0;
 
-            foreach(var app in appTimes)
+            foreach (var app in appTimes)
             {
                 double value = Math.Round(app.Value, 2);
                 chartDashboard.Series[0].Points.AddXY(app.Key, value);
@@ -118,7 +124,7 @@ namespace TaskForge.Views
 
         private void Tracker_SessionEnded(object? sender, TrackedSession e)
         {
-            
+
             // save to database
             Task.Run(() =>
             {
@@ -137,12 +143,67 @@ namespace TaskForge.Views
             });
         }
 
+
+        private async Task LoadHistoryDataAsync(string selectedApp = "All")
+        {
+            using var db = new AppDbContext();
+
+            var query = db.TrackedSessions.AsQueryable();
+
+            if (selectedApp != "All")
+            {
+                query = query.Where(s => s.ApplicationName == selectedApp);
+            }
+
+            // get all tracked sessions
+            var sessions = await query
+                .OrderByDescending(s => s.StartTime)
+                .ToListAsync();
+
+            var displayData = sessions.Select(s => new
+            {
+                s.Id,
+                s.ApplicationName,
+                s.WindowTitle,
+                StartTime = s.StartTime.ToString("g"),// general datetime format
+                EndTime = s.EndTime?.ToString("g") ?? "_",
+                Duration = Math.Round(s.Duration.TotalMinutes, 2) + " mins"
+            }).ToList();
+
+            dataGridHistory.DataSource = displayData;
+        }
+
+        private void LoadApplicationFilter()
+        {
+            cmbApplication.Items.Clear();
+            cmbApplication.Items.Add("All");
+
+            using (var conn = new SqliteConnection("Data Source=taskforge.db"))
+            {
+                conn.Open();
+
+                var cmd = new SqliteCommand("SELECT DISTINCT ApplicationName FROM TrackedSessions", conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    cmbApplication.Items.Add(reader["ApplicationName"].ToString());
+                }
+            }
+
+            cmbApplication.SelectedIndex = 0;
+        }
+
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             _tracker.Stop();
             base.OnFormClosing(e);
         }
 
-
+        private async void cmbApplication_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            await LoadHistoryDataAsync(cmbApplication.Text);
+        }
     }
 }
