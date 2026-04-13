@@ -41,9 +41,14 @@ namespace TaskForge.Views
             btnAddCategory.Click += btnAddCategory_Click;
             btnDeleteCategory.Click += btnDeleteCategory_Click;
 
+            btnAddIgnore.Click += btnAddIgnore_Click;
+            btnDeleteIgnore.Click += btnDeleteIgnore_Click;
+
+            btnSaveGoal.Click += btnSaveGoal_Click;
+
+
             timerRefresh.Start();
         }
-
         private void dashboardToolStripMenuItem_Click(object sender, EventArgs e)
         {
             panelDashboard.Visible = true;
@@ -67,6 +72,8 @@ namespace TaskForge.Views
             panelSettings.Visible = true;
 
             await LoadCategoriesAsync();
+            await LoadIgnoredAppsAsync();
+            await LoadGoalsAsync();
         }
 
         private async Task<Dictionary<string, double>> GetTodayAppTimesAsync()
@@ -136,6 +143,16 @@ namespace TaskForge.Views
                 try
                 {
                     using var db = new AppDbContext();
+
+                    bool isIgnored = db.IgnoredApps
+                        .Any(x => x.ApplicationName == e.ApplicationName);
+
+                    if (isIgnored)
+                    {
+                        Debug.WriteLine($"Ignored app skipped: {e.ApplicationName}");
+                        return; // not save
+                    }
+
                     db.TrackedSessions.Add(e);
                     db.SaveChanges();
                     Debug.WriteLine("Session saved to database.");
@@ -235,7 +252,7 @@ namespace TaskForge.Views
 
         private async void cmbCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
-            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value,cmbCategory.Text);
+            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value, cmbCategory.Text);
         }
 
         private async Task LoadCategoriesAsync()
@@ -263,6 +280,17 @@ namespace TaskForge.Views
             }
 
             cmbCategory.SelectedIndex = 0;
+
+            // fill goal category dropdown
+            cmbGoalCategory.Items.Clear();
+
+            foreach (var c in categories)
+            {
+                cmbGoalCategory.Items.Add(c.Name);
+            }
+
+            if (cmbGoalCategory.Items.Count > 0)
+                cmbGoalCategory.SelectedIndex = 0;
         }
 
         private async void btnAddCategory_Click(object sender, EventArgs e)
@@ -314,6 +342,129 @@ namespace TaskForge.Views
             await LoadCategoriesAsync();
         }
 
-        
+
+        // for ignore setting
+
+        private async Task LoadIgnoredAppsAsync()
+        {
+            using var db = new AppDbContext();
+
+            var apps = await db.IgnoredApps
+                .OrderBy(x => x.ApplicationName)
+                .ToListAsync();
+
+            lstIgnoredApps.Items.Clear();
+
+            foreach (var app in apps)
+            {
+                lstIgnoredApps.Items.Add(app.ApplicationName);
+            }
+        }
+
+        private async void btnAddIgnore_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtIgnoreApp.Text))
+                return;
+
+            using var db = new AppDbContext();
+
+            bool exists = await db.IgnoredApps
+                .AnyAsync(x => x.ApplicationName == txtIgnoreApp.Text);
+
+            if (exists)
+            {
+                MessageBox.Show("App already in ignore list!");
+                return;
+            }
+
+            db.IgnoredApps.Add(new IgnoredApp
+            {
+                ApplicationName = txtIgnoreApp.Text.Trim()
+            });
+
+            await db.SaveChangesAsync();
+
+            txtIgnoreApp.Clear();
+
+            await LoadIgnoredAppsAsync();
+        }
+
+
+        private async void btnDeleteIgnore_Click(object sender, EventArgs e)
+        {
+            if (lstIgnoredApps.SelectedItem == null)
+                return;
+
+            string selected = lstIgnoredApps.SelectedItem.ToString();
+
+            using var db = new AppDbContext();
+
+            var app = await db.IgnoredApps
+                .FirstOrDefaultAsync(x => x.ApplicationName == selected);
+
+            if (app == null)
+                return;
+
+            db.IgnoredApps.Remove(app);
+            await db.SaveChangesAsync();
+
+            await LoadIgnoredAppsAsync();
+        }
+
+        // save goal
+
+        private async Task LoadGoalsAsync()
+        {
+            using var db = new AppDbContext();
+
+            var goals = await db.DailyGoals
+                .Include(g => g.Category)
+                .ToListAsync();
+
+            lstGoals.Items.Clear();
+
+            foreach (var g in goals)
+            {
+                lstGoals.Items.Add($"{g.Category.Name} - {g.TargetMinutes} mins");
+            }
+        }
+
+        private async void btnSaveGoal_Click(object sender, EventArgs e)
+        {
+            if (cmbGoalCategory.SelectedItem == null)
+                return;
+
+            string categoryName = cmbGoalCategory.SelectedItem.ToString();
+            int minutes = (int)numGoalMinutes.Value;
+
+            using var db = new AppDbContext();
+
+            var category = await db.Categories
+                .FirstOrDefaultAsync(c => c.Name == categoryName);
+
+            if (category == null)
+                return;
+
+            // check if goal already exists for this category
+            var existing = await db.DailyGoals
+                .FirstOrDefaultAsync(g => g.CategoryId == category.Id);
+
+            if (existing != null)
+            {
+                existing.TargetMinutes = minutes; // update
+            }
+            else
+            {
+                db.DailyGoals.Add(new DailyGoal
+                {
+                    CategoryId = category.Id,
+                    TargetMinutes = minutes
+                });
+            }
+
+            await db.SaveChangesAsync();
+
+            await LoadGoalsAsync();
+        }
     }
 }

@@ -49,18 +49,37 @@
             panelSettings = new Panel();
             tabSettings = new TabControl();
             tabPage1 = new TabPage();
+            lblExistingCategories = new Label();
+            lblAddCategory = new Label();
+            lblCategoryTitle = new Label();
+            btnDeleteCategory = new Button();
+            btnAddCategory = new Button();
             txtCategory = new TextBox();
             lstCategories = new ListBox();
             tabPage2 = new TabPage();
+            lblIgnoredList = new Label();
+            lblAddIgnore = new Label();
+            lblIgnoreTitle = new Label();
+            lstIgnoredApps = new ListBox();
+            btnDeleteIgnore = new Button();
+            btnAddIgnore = new Button();
+            txtIgnoreApp = new TextBox();
             tabPage3 = new TabPage();
+            lstGoals = new ListBox();
+            btnSaveGoal = new Button();
+            numGoalMinutes = new NumericUpDown();
+            cmbGoalCategory = new ComboBox();
             menuStrip1 = new MenuStrip();
             dashboardToolStripMenuItem = new ToolStripMenuItem();
             historyToolStripMenuItem = new ToolStripMenuItem();
             settingsToolStripMenuItem = new ToolStripMenuItem();
             sqliteCommand1 = new Microsoft.Data.Sqlite.SqliteCommand();
             timerRefresh = new System.Windows.Forms.Timer(components);
-            btnAddCategory = new Button();
-            btnDeleteCategory = new Button();
+            lblGoalsTitle = new Label();
+            lblSetGoal = new Label();
+            label3 = new Label();
+            label1 = new Label();
+            lblSavedGoals = new Label();
             panelDashboard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)chartDashboard).BeginInit();
             panelHistory.SuspendLayout();
@@ -69,6 +88,9 @@
             panelSettings.SuspendLayout();
             tabSettings.SuspendLayout();
             tabPage1.SuspendLayout();
+            tabPage2.SuspendLayout();
+            tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numGoalMinutes).BeginInit();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -79,7 +101,7 @@
             panelDashboard.Dock = DockStyle.Fill;
             panelDashboard.Location = new Point(0, 0);
             panelDashboard.Name = "panelDashboard";
-            panelDashboard.Size = new Size(800, 450);
+            panelDashboard.Size = new Size(1000, 450);
             panelDashboard.TabIndex = 0;
             // 
             // lblTotalTime
@@ -100,14 +122,14 @@
             chartDashboard.ChartAreas.Add(chartArea2);
             legend2.Name = "Legend1";
             chartDashboard.Legends.Add(legend2);
-            chartDashboard.Location = new Point(0, 31);
+            chartDashboard.Location = new Point(0, 29);
             chartDashboard.Name = "chartDashboard";
             series2.ChartArea = "ChartArea1";
             series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
             series2.Legend = "Legend1";
             series2.Name = "Series1";
             chartDashboard.Series.Add(series2);
-            chartDashboard.Size = new Size(800, 419);
+            chartDashboard.Size = new Size(1000, 421);
             chartDashboard.TabIndex = 0;
             chartDashboard.Text = "chart1";
             // 
@@ -241,15 +263,17 @@
             tabSettings.Controls.Add(tabPage1);
             tabSettings.Controls.Add(tabPage2);
             tabSettings.Controls.Add(tabPage3);
-            tabSettings.Dock = DockStyle.Fill;
-            tabSettings.Location = new Point(0, 0);
+            tabSettings.Location = new Point(0, 29);
             tabSettings.Name = "tabSettings";
             tabSettings.SelectedIndex = 0;
-            tabSettings.Size = new Size(1000, 450);
-            tabSettings.TabIndex = 0;
+            tabSettings.Size = new Size(1000, 421);
+            tabSettings.TabIndex = 3;
             // 
             // tabPage1
             // 
+            tabPage1.Controls.Add(lblExistingCategories);
+            tabPage1.Controls.Add(lblAddCategory);
+            tabPage1.Controls.Add(lblCategoryTitle);
             tabPage1.Controls.Add(btnDeleteCategory);
             tabPage1.Controls.Add(btnAddCategory);
             tabPage1.Controls.Add(txtCategory);
@@ -257,14 +281,62 @@
             tabPage1.Location = new Point(4, 29);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(992, 417);
+            tabPage1.Size = new Size(992, 388);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Categories";
             tabPage1.UseVisualStyleBackColor = true;
             // 
+            // lblExistingCategories
+            // 
+            lblExistingCategories.AutoSize = true;
+            lblExistingCategories.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblExistingCategories.Location = new Point(21, 186);
+            lblExistingCategories.Name = "lblExistingCategories";
+            lblExistingCategories.Size = new Size(142, 20);
+            lblExistingCategories.TabIndex = 6;
+            lblExistingCategories.Text = "Existing Categories";
+            // 
+            // lblAddCategory
+            // 
+            lblAddCategory.AutoSize = true;
+            lblAddCategory.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblAddCategory.Location = new Point(21, 79);
+            lblAddCategory.Name = "lblAddCategory";
+            lblAddCategory.Size = new Size(142, 20);
+            lblAddCategory.TabIndex = 5;
+            lblAddCategory.Text = "Add New Category";
+            // 
+            // lblCategoryTitle
+            // 
+            lblCategoryTitle.AutoSize = true;
+            lblCategoryTitle.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblCategoryTitle.Location = new Point(21, 15);
+            lblCategoryTitle.Name = "lblCategoryTitle";
+            lblCategoryTitle.Size = new Size(208, 25);
+            lblCategoryTitle.TabIndex = 4;
+            lblCategoryTitle.Text = "Category Management";
+            // 
+            // btnDeleteCategory
+            // 
+            btnDeleteCategory.Location = new Point(21, 351);
+            btnDeleteCategory.Name = "btnDeleteCategory";
+            btnDeleteCategory.Size = new Size(436, 29);
+            btnDeleteCategory.TabIndex = 3;
+            btnDeleteCategory.Text = "Delete Selected";
+            btnDeleteCategory.UseVisualStyleBackColor = true;
+            // 
+            // btnAddCategory
+            // 
+            btnAddCategory.Location = new Point(21, 120);
+            btnAddCategory.Name = "btnAddCategory";
+            btnAddCategory.Size = new Size(436, 29);
+            btnAddCategory.TabIndex = 2;
+            btnAddCategory.Text = "Add";
+            btnAddCategory.UseVisualStyleBackColor = true;
+            // 
             // txtCategory
             // 
-            txtCategory.Location = new Point(410, 15);
+            txtCategory.Location = new Point(182, 76);
             txtCategory.Name = "txtCategory";
             txtCategory.Size = new Size(275, 27);
             txtCategory.TabIndex = 1;
@@ -272,30 +344,141 @@
             // lstCategories
             // 
             lstCategories.FormattingEnabled = true;
-            lstCategories.Location = new Point(8, 15);
+            lstCategories.Location = new Point(182, 186);
             lstCategories.Name = "lstCategories";
-            lstCategories.Size = new Size(320, 104);
+            lstCategories.Size = new Size(275, 144);
             lstCategories.TabIndex = 0;
             // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(lblIgnoredList);
+            tabPage2.Controls.Add(lblAddIgnore);
+            tabPage2.Controls.Add(lblIgnoreTitle);
+            tabPage2.Controls.Add(lstIgnoredApps);
+            tabPage2.Controls.Add(btnDeleteIgnore);
+            tabPage2.Controls.Add(btnAddIgnore);
+            tabPage2.Controls.Add(txtIgnoreApp);
             tabPage2.Location = new Point(4, 29);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(992, 417);
+            tabPage2.Size = new Size(992, 388);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Ignore List";
             tabPage2.UseVisualStyleBackColor = true;
             // 
+            // lblIgnoredList
+            // 
+            lblIgnoredList.AutoSize = true;
+            lblIgnoredList.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblIgnoredList.Location = new Point(25, 184);
+            lblIgnoredList.Name = "lblIgnoredList";
+            lblIgnoredList.Size = new Size(155, 20);
+            lblIgnoredList.TabIndex = 7;
+            lblIgnoredList.Text = "Ignored Applications";
+            // 
+            // lblAddIgnore
+            // 
+            lblAddIgnore.AutoSize = true;
+            lblAddIgnore.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblAddIgnore.Location = new Point(25, 77);
+            lblAddIgnore.Name = "lblAddIgnore";
+            lblAddIgnore.Size = new Size(191, 20);
+            lblAddIgnore.TabIndex = 5;
+            lblAddIgnore.Text = "Add Application to Ignore";
+            // 
+            // lblIgnoreTitle
+            // 
+            lblIgnoreTitle.AutoSize = true;
+            lblIgnoreTitle.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblIgnoreTitle.Location = new Point(25, 16);
+            lblIgnoreTitle.Name = "lblIgnoreTitle";
+            lblIgnoreTitle.Size = new Size(179, 25);
+            lblIgnoreTitle.TabIndex = 4;
+            lblIgnoreTitle.Text = "Ignore Applications";
+            // 
+            // lstIgnoredApps
+            // 
+            lstIgnoredApps.FormattingEnabled = true;
+            lstIgnoredApps.Location = new Point(210, 184);
+            lstIgnoredApps.Name = "lstIgnoredApps";
+            lstIgnoredApps.Size = new Size(353, 144);
+            lstIgnoredApps.TabIndex = 3;
+            // 
+            // btnDeleteIgnore
+            // 
+            btnDeleteIgnore.Location = new Point(25, 341);
+            btnDeleteIgnore.Name = "btnDeleteIgnore";
+            btnDeleteIgnore.Size = new Size(538, 29);
+            btnDeleteIgnore.TabIndex = 2;
+            btnDeleteIgnore.Text = "Delete Selected";
+            btnDeleteIgnore.UseVisualStyleBackColor = true;
+            // 
+            // btnAddIgnore
+            // 
+            btnAddIgnore.Location = new Point(25, 121);
+            btnAddIgnore.Name = "btnAddIgnore";
+            btnAddIgnore.Size = new Size(538, 29);
+            btnAddIgnore.TabIndex = 1;
+            btnAddIgnore.Text = "Add";
+            btnAddIgnore.UseVisualStyleBackColor = true;
+            // 
+            // txtIgnoreApp
+            // 
+            txtIgnoreApp.Location = new Point(255, 74);
+            txtIgnoreApp.Name = "txtIgnoreApp";
+            txtIgnoreApp.Size = new Size(308, 27);
+            txtIgnoreApp.TabIndex = 0;
+            // 
             // tabPage3
             // 
+            tabPage3.Controls.Add(lblSavedGoals);
+            tabPage3.Controls.Add(label1);
+            tabPage3.Controls.Add(label3);
+            tabPage3.Controls.Add(lblSetGoal);
+            tabPage3.Controls.Add(lblGoalsTitle);
+            tabPage3.Controls.Add(lstGoals);
+            tabPage3.Controls.Add(btnSaveGoal);
+            tabPage3.Controls.Add(numGoalMinutes);
+            tabPage3.Controls.Add(cmbGoalCategory);
             tabPage3.Location = new Point(4, 29);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(992, 417);
+            tabPage3.Size = new Size(992, 388);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Daily Goals";
             tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // lstGoals
+            // 
+            lstGoals.FormattingEnabled = true;
+            lstGoals.Location = new Point(403, 113);
+            lstGoals.Name = "lstGoals";
+            lstGoals.Size = new Size(348, 164);
+            lstGoals.TabIndex = 3;
+            // 
+            // btnSaveGoal
+            // 
+            btnSaveGoal.Location = new Point(40, 248);
+            btnSaveGoal.Name = "btnSaveGoal";
+            btnSaveGoal.Size = new Size(261, 29);
+            btnSaveGoal.TabIndex = 2;
+            btnSaveGoal.Text = "Save";
+            btnSaveGoal.UseVisualStyleBackColor = true;
+            // 
+            // numGoalMinutes
+            // 
+            numGoalMinutes.Location = new Point(150, 179);
+            numGoalMinutes.Name = "numGoalMinutes";
+            numGoalMinutes.Size = new Size(150, 27);
+            numGoalMinutes.TabIndex = 1;
+            // 
+            // cmbGoalCategory
+            // 
+            cmbGoalCategory.FormattingEnabled = true;
+            cmbGoalCategory.Location = new Point(150, 111);
+            cmbGoalCategory.Name = "cmbGoalCategory";
+            cmbGoalCategory.Size = new Size(151, 28);
+            cmbGoalCategory.TabIndex = 0;
             // 
             // menuStrip1
             // 
@@ -340,23 +523,53 @@
             timerRefresh.Interval = 5000;
             timerRefresh.Tick += timerRefresh_Tick;
             // 
-            // btnAddCategory
+            // lblGoalsTitle
             // 
-            btnAddCategory.Location = new Point(726, 15);
-            btnAddCategory.Name = "btnAddCategory";
-            btnAddCategory.Size = new Size(179, 29);
-            btnAddCategory.TabIndex = 2;
-            btnAddCategory.Text = "Add";
-            btnAddCategory.UseVisualStyleBackColor = true;
+            lblGoalsTitle.AutoSize = true;
+            lblGoalsTitle.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblGoalsTitle.Location = new Point(40, 13);
+            lblGoalsTitle.Name = "lblGoalsTitle";
+            lblGoalsTitle.Size = new Size(107, 25);
+            lblGoalsTitle.TabIndex = 4;
+            lblGoalsTitle.Text = "Daily Goals";
             // 
-            // btnDeleteCategory
+            // lblSetGoal
             // 
-            btnDeleteCategory.Location = new Point(482, 59);
-            btnDeleteCategory.Name = "btnDeleteCategory";
-            btnDeleteCategory.Size = new Size(331, 29);
-            btnDeleteCategory.TabIndex = 3;
-            btnDeleteCategory.Text = "Delete Selected";
-            btnDeleteCategory.UseVisualStyleBackColor = true;
+            lblSetGoal.AutoSize = true;
+            lblSetGoal.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblSetGoal.Location = new Point(20, 63);
+            lblSetGoal.Name = "lblSetGoal";
+            lblSetGoal.Size = new Size(106, 20);
+            lblSetGoal.TabIndex = 5;
+            lblSetGoal.Text = "Set Daily Goal";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(40, 114);
+            label3.Name = "label3";
+            label3.Size = new Size(69, 20);
+            label3.TabIndex = 6;
+            label3.Text = "Category";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(20, 181);
+            label1.Name = "label1";
+            label1.Size = new Size(106, 20);
+            label1.TabIndex = 7;
+            label1.Text = "Target Minutes";
+            // 
+            // lblSavedGoals
+            // 
+            lblSavedGoals.AutoSize = true;
+            lblSavedGoals.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblSavedGoals.Location = new Point(403, 72);
+            lblSavedGoals.Name = "lblSavedGoals";
+            lblSavedGoals.Size = new Size(93, 20);
+            lblSavedGoals.TabIndex = 8;
+            lblSavedGoals.Text = "Saved Goals";
             // 
             // MainForm
             // 
@@ -381,6 +594,11 @@
             tabSettings.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
+            tabPage2.ResumeLayout(false);
+            tabPage2.PerformLayout();
+            tabPage3.ResumeLayout(false);
+            tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numGoalMinutes).EndInit();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ResumeLayout(false);
@@ -418,5 +636,24 @@
         private TextBox txtCategory;
         private Button btnDeleteCategory;
         private Button btnAddCategory;
+        private Button btnDeleteIgnore;
+        private Button btnAddIgnore;
+        private TextBox txtIgnoreApp;
+        private ListBox lstIgnoredApps;
+        private ListBox lstGoals;
+        private Button btnSaveGoal;
+        private NumericUpDown numGoalMinutes;
+        private ComboBox cmbGoalCategory;
+        private Label lblExistingCategories;
+        private Label lblAddCategory;
+        private Label lblCategoryTitle;
+        private Label lblAddIgnore;
+        private Label lblIgnoreTitle;
+        private Label lblIgnoredList;
+        private Label label3;
+        private Label lblSetGoal;
+        private Label lblGoalsTitle;
+        private Label lblSavedGoals;
+        private Label label1;
     }
 }
