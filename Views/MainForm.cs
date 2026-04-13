@@ -38,6 +38,9 @@ namespace TaskForge.Views
 
             LoadApplicationFilter();
 
+            btnAddCategory.Click += btnAddCategory_Click;
+            btnDeleteCategory.Click += btnDeleteCategory_Click;
+
             timerRefresh.Start();
         }
 
@@ -54,14 +57,16 @@ namespace TaskForge.Views
             panelHistory.Visible = true;
             panelSettings.Visible = false;
 
-            await LoadHistoryDataAsync(cmbApplication.Text); // refresh history data when opened
+            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value); // refresh history data when opened
         }
 
-        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             panelDashboard.Visible = false;
             panelHistory.Visible = false;
             panelSettings.Visible = true;
+
+            await LoadCategoriesAsync();
         }
 
         private async Task<Dictionary<string, double>> GetTodayAppTimesAsync()
@@ -144,16 +149,25 @@ namespace TaskForge.Views
         }
 
 
-        private async Task LoadHistoryDataAsync(string selectedApp = "All")
+        private async Task LoadHistoryDataAsync(string selectedApp, DateTime from, DateTime to, string category = "All")
         {
             using var db = new AppDbContext();
 
             var query = db.TrackedSessions.AsQueryable();
 
+            // application filter
             if (selectedApp != "All")
             {
                 query = query.Where(s => s.ApplicationName == selectedApp);
             }
+
+            // date range filter
+            DateTime toEnd = to.Date.AddDays(1);
+
+            query = query.Where(s => s.StartTime >= from.Date && s.StartTime < toEnd);
+
+            //if (category != "All")
+            //    query = query.Where(s => s.Category == category);
 
             // get all tracked sessions
             var sessions = await query
@@ -192,6 +206,9 @@ namespace TaskForge.Views
             }
 
             cmbApplication.SelectedIndex = 0;
+
+            dtFrom.Value = DateTime.Today;
+            dtTo.Value = DateTime.Today;
         }
 
 
@@ -203,7 +220,100 @@ namespace TaskForge.Views
 
         private async void cmbApplication_SelectedIndexChanged(object sender, EventArgs e)
         {
-            await LoadHistoryDataAsync(cmbApplication.Text);
+            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value);
         }
+
+        private async void dtFrom_ValueChanged(object sender, EventArgs e)
+        {
+            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value);
+        }
+
+        private async void dtTo_ValueChanged(object sender, EventArgs e)
+        {
+            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value);
+        }
+
+        private async void cmbCategory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value,cmbCategory.Text);
+        }
+
+        private async Task LoadCategoriesAsync()
+        {
+            using var db = new AppDbContext();
+
+            var categories = await db.Categories
+                .OrderBy(c => c.Name)
+                .ToListAsync();
+
+            lstCategories.Items.Clear();
+
+            foreach (var c in categories)
+            {
+                lstCategories.Items.Add(c.Name);
+            }
+
+            // also refresh filter dropdown
+            cmbCategory.Items.Clear();
+            cmbCategory.Items.Add("All");
+
+            foreach (var c in categories)
+            {
+                cmbCategory.Items.Add(c.Name);
+            }
+
+            cmbCategory.SelectedIndex = 0;
+        }
+
+        private async void btnAddCategory_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtCategory.Text))
+                return;
+
+            using var db = new AppDbContext();
+
+            var exists = await db.Categories
+                .AnyAsync(c => c.Name == txtCategory.Text);
+
+            if (exists)
+            {
+                MessageBox.Show("Category already exists!");
+                return;
+            }
+
+            db.Categories.Add(new Category
+            {
+                Name = txtCategory.Text.Trim()
+            });
+
+            await db.SaveChangesAsync();
+
+            txtCategory.Clear();
+
+            await LoadCategoriesAsync();
+        }
+
+        private async void btnDeleteCategory_Click(object sender, EventArgs e)
+        {
+            if (lstCategories.SelectedItem == null)
+                return;
+
+            string selected = lstCategories.SelectedItem.ToString();
+
+            using var db = new AppDbContext();
+
+            var category = await db.Categories
+                .FirstOrDefaultAsync(c => c.Name == selected);
+
+            if (category == null)
+                return;
+
+            db.Categories.Remove(category);
+            await db.SaveChangesAsync();
+
+            await LoadCategoriesAsync();
+        }
+
+        
     }
 }
