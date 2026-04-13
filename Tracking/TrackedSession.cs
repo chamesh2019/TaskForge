@@ -7,6 +7,12 @@ namespace TaskForge.Tracking
         public int Id { get; set; }
         public string ApplicationName { get; set; } = string.Empty;
         public string WindowTitle { get; set; } = string.Empty;
+
+        public int? CategoryId { get; set; }
+        public Category? Category { get; set; }
+
+        
+
         public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
 
