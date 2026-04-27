@@ -65,6 +65,11 @@
             btnAddIgnore = new Button();
             txtIgnoreApp = new TextBox();
             tabPage3 = new TabPage();
+            lblSavedGoals = new Label();
+            label1 = new Label();
+            label3 = new Label();
+            lblSetGoal = new Label();
+            lblGoalsTitle = new Label();
             lstGoals = new ListBox();
             btnSaveGoal = new Button();
             numGoalMinutes = new NumericUpDown();
@@ -75,11 +80,8 @@
             settingsToolStripMenuItem = new ToolStripMenuItem();
             sqliteCommand1 = new Microsoft.Data.Sqlite.SqliteCommand();
             timerRefresh = new System.Windows.Forms.Timer(components);
-            lblGoalsTitle = new Label();
-            lblSetGoal = new Label();
-            label3 = new Label();
-            label1 = new Label();
-            lblSavedGoals = new Label();
+            bindingSource1 = new BindingSource(components);
+            btnCheckGoals = new Button();
             panelDashboard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)chartDashboard).BeginInit();
             panelHistory.SuspendLayout();
@@ -92,10 +94,12 @@
             tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numGoalMinutes).BeginInit();
             menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)bindingSource1).BeginInit();
             SuspendLayout();
             // 
             // panelDashboard
             // 
+            panelDashboard.Controls.Add(btnCheckGoals);
             panelDashboard.Controls.Add(lblTotalTime);
             panelDashboard.Controls.Add(chartDashboard);
             panelDashboard.Dock = DockStyle.Fill;
@@ -122,7 +126,7 @@
             chartDashboard.ChartAreas.Add(chartArea2);
             legend2.Name = "Legend1";
             chartDashboard.Legends.Add(legend2);
-            chartDashboard.Location = new Point(0, 29);
+            chartDashboard.Location = new Point(4, 99);
             chartDashboard.Name = "chartDashboard";
             series2.ChartArea = "ChartArea1";
             series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
@@ -448,6 +452,54 @@
             tabPage3.Text = "Daily Goals";
             tabPage3.UseVisualStyleBackColor = true;
             // 
+            // lblSavedGoals
+            // 
+            lblSavedGoals.AutoSize = true;
+            lblSavedGoals.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblSavedGoals.Location = new Point(403, 72);
+            lblSavedGoals.Name = "lblSavedGoals";
+            lblSavedGoals.Size = new Size(93, 20);
+            lblSavedGoals.TabIndex = 8;
+            lblSavedGoals.Text = "Saved Goals";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(20, 181);
+            label1.Name = "label1";
+            label1.Size = new Size(106, 20);
+            label1.TabIndex = 7;
+            label1.Text = "Target Minutes";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(40, 114);
+            label3.Name = "label3";
+            label3.Size = new Size(69, 20);
+            label3.TabIndex = 6;
+            label3.Text = "Category";
+            // 
+            // lblSetGoal
+            // 
+            lblSetGoal.AutoSize = true;
+            lblSetGoal.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblSetGoal.Location = new Point(20, 63);
+            lblSetGoal.Name = "lblSetGoal";
+            lblSetGoal.Size = new Size(106, 20);
+            lblSetGoal.TabIndex = 5;
+            lblSetGoal.Text = "Set Daily Goal";
+            // 
+            // lblGoalsTitle
+            // 
+            lblGoalsTitle.AutoSize = true;
+            lblGoalsTitle.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblGoalsTitle.Location = new Point(40, 13);
+            lblGoalsTitle.Name = "lblGoalsTitle";
+            lblGoalsTitle.Size = new Size(107, 25);
+            lblGoalsTitle.TabIndex = 4;
+            lblGoalsTitle.Text = "Daily Goals";
+            // 
             // lstGoals
             // 
             lstGoals.FormattingEnabled = true;
@@ -523,53 +575,15 @@
             timerRefresh.Interval = 5000;
             timerRefresh.Tick += timerRefresh_Tick;
             // 
-            // lblGoalsTitle
+            // btnCheckGoals
             // 
-            lblGoalsTitle.AutoSize = true;
-            lblGoalsTitle.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblGoalsTitle.Location = new Point(40, 13);
-            lblGoalsTitle.Name = "lblGoalsTitle";
-            lblGoalsTitle.Size = new Size(107, 25);
-            lblGoalsTitle.TabIndex = 4;
-            lblGoalsTitle.Text = "Daily Goals";
-            // 
-            // lblSetGoal
-            // 
-            lblSetGoal.AutoSize = true;
-            lblSetGoal.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblSetGoal.Location = new Point(20, 63);
-            lblSetGoal.Name = "lblSetGoal";
-            lblSetGoal.Size = new Size(106, 20);
-            lblSetGoal.TabIndex = 5;
-            lblSetGoal.Text = "Set Daily Goal";
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(40, 114);
-            label3.Name = "label3";
-            label3.Size = new Size(69, 20);
-            label3.TabIndex = 6;
-            label3.Text = "Category";
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(20, 181);
-            label1.Name = "label1";
-            label1.Size = new Size(106, 20);
-            label1.TabIndex = 7;
-            label1.Text = "Target Minutes";
-            // 
-            // lblSavedGoals
-            // 
-            lblSavedGoals.AutoSize = true;
-            lblSavedGoals.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblSavedGoals.Location = new Point(403, 72);
-            lblSavedGoals.Name = "lblSavedGoals";
-            lblSavedGoals.Size = new Size(93, 20);
-            lblSavedGoals.TabIndex = 8;
-            lblSavedGoals.Text = "Saved Goals";
+            btnCheckGoals.Location = new Point(30, 119);
+            btnCheckGoals.Name = "btnCheckGoals";
+            btnCheckGoals.Size = new Size(94, 29);
+            btnCheckGoals.TabIndex = 2;
+            btnCheckGoals.Text = "Check Goals";
+            btnCheckGoals.UseVisualStyleBackColor = true;
+            btnCheckGoals.Click += btnCheckGoals_Click_1;
             // 
             // MainForm
             // 
@@ -601,6 +615,7 @@
             ((System.ComponentModel.ISupportInitialize)numGoalMinutes).EndInit();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)bindingSource1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -655,5 +670,7 @@
         private Label lblGoalsTitle;
         private Label lblSavedGoals;
         private Label label1;
+        private BindingSource bindingSource1;
+        private Button btnCheckGoals;
     }
 }
