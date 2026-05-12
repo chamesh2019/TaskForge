@@ -23,16 +23,16 @@ namespace TaskForge.Views
         {
             InitializeComponent();
 
-            _tracker = new WindowTracker();
-
-            LoadCategoriesIntoGoalComboBox();
-            LoadSavedGoals();
-
             // database is created
             using (var db = new AppDbContext())
             {
                 db.Database.EnsureCreated();
             }
+
+            _tracker = new WindowTracker();
+
+            LoadCategoriesIntoGoalComboBox();
+            LoadSavedGoals();
 
             // initialize tracker and start
             _tracker = new WindowTracker();
