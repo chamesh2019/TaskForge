@@ -80,6 +80,8 @@ namespace TaskForge.Views
             await LoadCategoriesAsync();
             await LoadIgnoredAppsAsync();
             await LoadGoalsAsync();
+
+            LoadCategoriesIntoGoalComboBox();
         }
 
         private async Task<Dictionary<string, double>> GetTodayAppTimesAsync()
@@ -579,6 +581,12 @@ namespace TaskForge.Views
             {
                 MessageBox.Show(string.Join(Environment.NewLine, messages));
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            AppCatergory form = new AppCatergory();
+            form.ShowDialog();
         }
     }
 }

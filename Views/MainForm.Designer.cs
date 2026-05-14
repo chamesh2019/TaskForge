@@ -29,10 +29,11 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             panelDashboard = new Panel();
+            btnCheckGoals = new Button();
             lblTotalTime = new Label();
             chartDashboard = new System.Windows.Forms.DataVisualization.Charting.Chart();
             panelHistory = new Panel();
@@ -81,7 +82,7 @@
             sqliteCommand1 = new Microsoft.Data.Sqlite.SqliteCommand();
             timerRefresh = new System.Windows.Forms.Timer(components);
             bindingSource1 = new BindingSource(components);
-            btnCheckGoals = new Button();
+            button1 = new Button();
             panelDashboard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)chartDashboard).BeginInit();
             panelHistory.SuspendLayout();
@@ -99,6 +100,7 @@
             // 
             // panelDashboard
             // 
+            panelDashboard.Controls.Add(button1);
             panelDashboard.Controls.Add(btnCheckGoals);
             panelDashboard.Controls.Add(lblTotalTime);
             panelDashboard.Controls.Add(chartDashboard);
@@ -107,6 +109,16 @@
             panelDashboard.Name = "panelDashboard";
             panelDashboard.Size = new Size(1000, 450);
             panelDashboard.TabIndex = 0;
+            // 
+            // btnCheckGoals
+            // 
+            btnCheckGoals.Location = new Point(30, 119);
+            btnCheckGoals.Name = "btnCheckGoals";
+            btnCheckGoals.Size = new Size(94, 29);
+            btnCheckGoals.TabIndex = 2;
+            btnCheckGoals.Text = "Check Goals";
+            btnCheckGoals.UseVisualStyleBackColor = true;
+            btnCheckGoals.Click += btnCheckGoals_Click_1;
             // 
             // lblTotalTime
             // 
@@ -122,17 +134,17 @@
             // 
             // chartDashboard
             // 
-            chartArea2.Name = "ChartArea1";
-            chartDashboard.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            chartDashboard.Legends.Add(legend2);
+            chartArea1.Name = "ChartArea1";
+            chartDashboard.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            chartDashboard.Legends.Add(legend1);
             chartDashboard.Location = new Point(4, 99);
             chartDashboard.Name = "chartDashboard";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            chartDashboard.Series.Add(series2);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            chartDashboard.Series.Add(series1);
             chartDashboard.Size = new Size(1000, 421);
             chartDashboard.TabIndex = 0;
             chartDashboard.Text = "chart1";
@@ -575,15 +587,15 @@
             timerRefresh.Interval = 5000;
             timerRefresh.Tick += timerRefresh_Tick;
             // 
-            // btnCheckGoals
+            // button1
             // 
-            btnCheckGoals.Location = new Point(30, 119);
-            btnCheckGoals.Name = "btnCheckGoals";
-            btnCheckGoals.Size = new Size(94, 29);
-            btnCheckGoals.TabIndex = 2;
-            btnCheckGoals.Text = "Check Goals";
-            btnCheckGoals.UseVisualStyleBackColor = true;
-            btnCheckGoals.Click += btnCheckGoals_Click_1;
+            button1.Location = new Point(788, 51);
+            button1.Name = "button1";
+            button1.Size = new Size(187, 29);
+            button1.TabIndex = 3;
+            button1.Text = "Edit App Category";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // MainForm
             // 
@@ -672,5 +684,6 @@
         private Label label1;
         private BindingSource bindingSource1;
         private Button btnCheckGoals;
+        private Button button1;
     }
 }
