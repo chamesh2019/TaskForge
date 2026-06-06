@@ -1,41 +1,53 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using Microsoft.EntityFrameworkCore;
-using TaskForge.Data;
-using TaskForge.Tracking;
-using System.Linq;
 using System.Diagnostics;
-using Microsoft.Data.Sqlite;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using TaskForge.Data;
+using TaskForge.Services;
+using TaskForge.Tracking;
 
 namespace TaskForge.Views
 {
     public partial class MainForm : Form
     {
-        private WindowTracker _tracker;
+        private readonly IDatabaseInitializer _dbInitializer;
+        private readonly ICategoryService _categoryService;
+        private readonly IIgnoredAppService _ignoredAppService;
+        private readonly IGoalService _goalService;
+        private readonly ITrackingService _trackingService;
+        private readonly INotificationService _notificationService;
 
-        public MainForm()
+        public MainForm(
+            IDatabaseInitializer dbInitializer,
+            ICategoryService categoryService,
+            IIgnoredAppService ignoredAppService,
+            IGoalService goalService,
+            ITrackingService trackingService,
+            INotificationService notificationService)
         {
             InitializeComponent();
 
-            // database is created
-            using (var db = new AppDbContext())
-            {
-                db.Database.EnsureCreated();
-            }
+            _dbInitializer = dbInitializer;
+            _categoryService = categoryService;
+            _ignoredAppService = ignoredAppService;
+            _goalService = goalService;
+            _trackingService = trackingService;
+            _notificationService = notificationService;
 
-            // initialize tracker and start
-            _tracker = new WindowTracker();
-            _tracker.ActiveWindowChanged += Tracker_ActiveWindowChanged;
-            _tracker.SessionEnded += Tracker_SessionEnded;
-            _tracker.Start();
+            // Initialize database schema
+            _dbInitializer.Initialize();
+
+            // Register for goals met notifications
+            _notificationService.NotificationTriggered += NotificationService_NotificationTriggered;
+
+            // Initialize tracker and start tracking background events
+            _trackingService.ActiveWindowChanged += Tracker_ActiveWindowChanged;
+            _trackingService.SessionEnded += Tracker_SessionEnded;
+            _trackingService.StartTracking();
 
             LoadChartData();
-
             LoadApplicationFilter();
 
             btnAddCategory.Click += btnAddCategory_Click;
@@ -46,9 +58,24 @@ namespace TaskForge.Views
 
             btnSaveGoal.Click += btnSaveGoal_Click;
 
-
             timerRefresh.Start();
         }
+
+        private void NotificationService_NotificationTriggered(object? sender, string message)
+        {
+            // Goals checks run in a background thread, so marshal back to UI thread
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(() => 
+                    MessageBox.Show(this, message, "Daily Goal Achieved", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                ));
+            }
+            else
+            {
+                MessageBox.Show(this, message, "Daily Goal Achieved", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
         private void dashboardToolStripMenuItem_Click(object sender, EventArgs e)
         {
             panelDashboard.Visible = true;
@@ -62,7 +89,7 @@ namespace TaskForge.Views
             panelHistory.Visible = true;
             panelSettings.Visible = false;
 
-            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value); // refresh history data when opened
+            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value);
         }
 
         private async void settingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -76,30 +103,6 @@ namespace TaskForge.Views
             await LoadGoalsAsync();
         }
 
-        private async Task<Dictionary<string, double>> GetTodayAppTimesAsync()
-        {
-            using var db = new AppDbContext();
-
-            // get start of today
-            DateTime today = DateTime.Today;
-
-            // get all tracked sessions for today
-            var sessions = await db.TrackedSessions
-                .Where(s => s.StartTime >= today)
-                .ToListAsync();
-
-
-            // group by application and sum durations in minutes
-            var appTimes = sessions
-                .GroupBy(s => s.ApplicationName)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.Sum(s => s.Duration.TotalMinutes)
-                );
-            return appTimes;
-        }
-
-
         private async void LoadChartData()
         {
             chartDashboard.Series[0].Points.Clear();
@@ -108,7 +111,7 @@ namespace TaskForge.Views
             chartDashboard.Series[0]["PieLineColor"] = "Black";
             chartDashboard.Series[0]["PieStartAngle"] = "270";
 
-            var appTimes = await GetTodayAppTimesAsync();
+            var appTimes = await _trackingService.GetTodayAppTimesAsync();
 
             double total = 0;
 
@@ -124,79 +127,37 @@ namespace TaskForge.Views
 
         private void timerRefresh_Tick(object sender, EventArgs e)
         {
-            LoadChartData(); // refresh chart
+            LoadChartData();
         }
-
 
         private void Tracker_ActiveWindowChanged(object? sender, TrackedSession e)
         {
-            // show in debug output
             Debug.WriteLine($"[Active Window Changed] App: {e.ApplicationName}, Title: {e.WindowTitle}");
         }
 
         private void Tracker_SessionEnded(object? sender, TrackedSession e)
         {
-
-            // save to database
-            Task.Run(() =>
+            // Invoke chart refresh on the UI thread as the end session is tracked in a background task
+            if (InvokeRequired)
             {
-                try
-                {
-                    using var db = new AppDbContext();
-
-                    bool isIgnored = db.IgnoredApps
-                        .Any(x => x.ApplicationName == e.ApplicationName);
-
-                    if (isIgnored)
-                    {
-                        Debug.WriteLine($"Ignored app skipped: {e.ApplicationName}");
-                        return; // not save
-                    }
-
-                    db.TrackedSessions.Add(e);
-                    db.SaveChanges();
-                    Debug.WriteLine("Session saved to database.");
-
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"Failed to save session: {ex.Message}");
-                }
-            });
+                BeginInvoke(new Action(LoadChartData));
+            }
+            else
+            {
+                LoadChartData();
+            }
         }
 
-
-        private async Task LoadHistoryDataAsync(string selectedApp, DateTime from, DateTime to, string category = "All")
+        private async Task LoadHistoryDataAsync(string selectedApp, DateTime from, DateTime to, string categoryName = "All")
         {
-            using var db = new AppDbContext();
-
-            var query = db.TrackedSessions.AsQueryable();
-
-            // application filter
-            if (selectedApp != "All")
-            {
-                query = query.Where(s => s.ApplicationName == selectedApp);
-            }
-
-            // date range filter
-            DateTime toEnd = to.Date.AddDays(1);
-
-            query = query.Where(s => s.StartTime >= from.Date && s.StartTime < toEnd);
-
-            //if (category != "All")
-            //    query = query.Where(s => s.Category == category);
-
-            // get all tracked sessions
-            var sessions = await query
-                .OrderByDescending(s => s.StartTime)
-                .ToListAsync();
+            var sessions = await _trackingService.GetFilteredSessionsAsync(selectedApp, from, to, categoryName);
 
             var displayData = sessions.Select(s => new
             {
                 s.Id,
                 s.ApplicationName,
                 s.WindowTitle,
-                StartTime = s.StartTime.ToString("g"),// general datetime format
+                StartTime = s.StartTime.ToString("g"),
                 EndTime = s.EndTime?.ToString("g") ?? "_",
                 Duration = Math.Round(s.Duration.TotalMinutes, 2) + " mins"
             }).ToList();
@@ -204,22 +165,15 @@ namespace TaskForge.Views
             dataGridHistory.DataSource = displayData;
         }
 
-        private void LoadApplicationFilter()
+        private async void LoadApplicationFilter()
         {
             cmbApplication.Items.Clear();
             cmbApplication.Items.Add("All");
 
-            using (var conn = new SqliteConnection("Data Source=taskforge.db"))
+            var apps = await _trackingService.GetDistinctApplicationNamesAsync();
+            foreach (var app in apps)
             {
-                conn.Open();
-
-                var cmd = new SqliteCommand("SELECT DISTINCT ApplicationName FROM TrackedSessions", conn);
-                var reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    cmbApplication.Items.Add(reader["ApplicationName"].ToString());
-                }
+                cmbApplication.Items.Add(app);
             }
 
             cmbApplication.SelectedIndex = 0;
@@ -228,26 +182,25 @@ namespace TaskForge.Views
             dtTo.Value = DateTime.Today;
         }
 
-
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            _tracker.Stop();
+            _trackingService.StopTracking();
             base.OnFormClosing(e);
         }
 
         private async void cmbApplication_SelectedIndexChanged(object sender, EventArgs e)
         {
-            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value);
+            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value, cmbCategory.Text);
         }
 
         private async void dtFrom_ValueChanged(object sender, EventArgs e)
         {
-            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value);
+            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value, cmbCategory.Text);
         }
 
         private async void dtTo_ValueChanged(object sender, EventArgs e)
         {
-            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value);
+            await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value, cmbCategory.Text);
         }
 
         private async void cmbCategory_SelectedIndexChanged(object sender, EventArgs e)
@@ -257,20 +210,14 @@ namespace TaskForge.Views
 
         private async Task LoadCategoriesAsync()
         {
-            using var db = new AppDbContext();
-
-            var categories = await db.Categories
-                .OrderBy(c => c.Name)
-                .ToListAsync();
+            var categories = await _categoryService.GetAllCategoriesAsync();
 
             lstCategories.Items.Clear();
-
             foreach (var c in categories)
             {
                 lstCategories.Items.Add(c.Name);
             }
 
-            // also refresh filter dropdown
             cmbCategory.Items.Clear();
             cmbCategory.Items.Add("All");
 
@@ -281,9 +228,7 @@ namespace TaskForge.Views
 
             cmbCategory.SelectedIndex = 0;
 
-            // fill goal category dropdown
             cmbGoalCategory.Items.Clear();
-
             foreach (var c in categories)
             {
                 cmbGoalCategory.Items.Add(c.Name);
@@ -298,26 +243,14 @@ namespace TaskForge.Views
             if (string.IsNullOrWhiteSpace(txtCategory.Text))
                 return;
 
-            using var db = new AppDbContext();
-
-            var exists = await db.Categories
-                .AnyAsync(c => c.Name == txtCategory.Text);
-
-            if (exists)
+            bool success = await _categoryService.AddCategoryAsync(txtCategory.Text);
+            if (!success)
             {
-                MessageBox.Show("Category already exists!");
+                MessageBox.Show("Category already exists or could not be added!");
                 return;
             }
 
-            db.Categories.Add(new Category
-            {
-                Name = txtCategory.Text.Trim()
-            });
-
-            await db.SaveChangesAsync();
-
             txtCategory.Clear();
-
             await LoadCategoriesAsync();
         }
 
@@ -326,35 +259,16 @@ namespace TaskForge.Views
             if (lstCategories.SelectedItem == null)
                 return;
 
-            string selected = lstCategories.SelectedItem.ToString();
-
-            using var db = new AppDbContext();
-
-            var category = await db.Categories
-                .FirstOrDefaultAsync(c => c.Name == selected);
-
-            if (category == null)
-                return;
-
-            db.Categories.Remove(category);
-            await db.SaveChangesAsync();
-
+            string selected = lstCategories.SelectedItem.ToString()!;
+            await _categoryService.DeleteCategoryAsync(selected);
             await LoadCategoriesAsync();
         }
 
-
-        // for ignore setting
-
         private async Task LoadIgnoredAppsAsync()
         {
-            using var db = new AppDbContext();
-
-            var apps = await db.IgnoredApps
-                .OrderBy(x => x.ApplicationName)
-                .ToListAsync();
+            var apps = await _ignoredAppService.GetIgnoredAppsAsync();
 
             lstIgnoredApps.Items.Clear();
-
             foreach (var app in apps)
             {
                 lstIgnoredApps.Items.Add(app.ApplicationName);
@@ -366,66 +280,36 @@ namespace TaskForge.Views
             if (string.IsNullOrWhiteSpace(txtIgnoreApp.Text))
                 return;
 
-            using var db = new AppDbContext();
-
-            bool exists = await db.IgnoredApps
-                .AnyAsync(x => x.ApplicationName == txtIgnoreApp.Text);
-
-            if (exists)
+            bool success = await _ignoredAppService.AddIgnoredAppAsync(txtIgnoreApp.Text);
+            if (!success)
             {
-                MessageBox.Show("App already in ignore list!");
+                MessageBox.Show("App already in ignore list or could not be added!");
                 return;
             }
 
-            db.IgnoredApps.Add(new IgnoredApp
-            {
-                ApplicationName = txtIgnoreApp.Text.Trim()
-            });
-
-            await db.SaveChangesAsync();
-
             txtIgnoreApp.Clear();
-
             await LoadIgnoredAppsAsync();
         }
-
 
         private async void btnDeleteIgnore_Click(object sender, EventArgs e)
         {
             if (lstIgnoredApps.SelectedItem == null)
                 return;
 
-            string selected = lstIgnoredApps.SelectedItem.ToString();
-
-            using var db = new AppDbContext();
-
-            var app = await db.IgnoredApps
-                .FirstOrDefaultAsync(x => x.ApplicationName == selected);
-
-            if (app == null)
-                return;
-
-            db.IgnoredApps.Remove(app);
-            await db.SaveChangesAsync();
-
+            string selected = lstIgnoredApps.SelectedItem.ToString()!;
+            await _ignoredAppService.DeleteIgnoredAppAsync(selected);
             await LoadIgnoredAppsAsync();
         }
 
-        // save goal
-
         private async Task LoadGoalsAsync()
         {
-            using var db = new AppDbContext();
-
-            var goals = await db.DailyGoals
-                .Include(g => g.Category)
-                .ToListAsync();
+            var goals = await _goalService.GetGoalsAsync();
 
             lstGoals.Items.Clear();
-
             foreach (var g in goals)
             {
-                lstGoals.Items.Add($"{g.Category.Name} - {g.TargetMinutes} mins");
+                string categoryName = g.Category?.Name ?? "Unknown";
+                lstGoals.Items.Add($"{categoryName} - {g.TargetMinutes} mins");
             }
         }
 
@@ -434,36 +318,10 @@ namespace TaskForge.Views
             if (cmbGoalCategory.SelectedItem == null)
                 return;
 
-            string categoryName = cmbGoalCategory.SelectedItem.ToString();
+            string categoryName = cmbGoalCategory.SelectedItem.ToString()!;
             int minutes = (int)numGoalMinutes.Value;
 
-            using var db = new AppDbContext();
-
-            var category = await db.Categories
-                .FirstOrDefaultAsync(c => c.Name == categoryName);
-
-            if (category == null)
-                return;
-
-            // check if goal already exists for this category
-            var existing = await db.DailyGoals
-                .FirstOrDefaultAsync(g => g.CategoryId == category.Id);
-
-            if (existing != null)
-            {
-                existing.TargetMinutes = minutes; // update
-            }
-            else
-            {
-                db.DailyGoals.Add(new DailyGoal
-                {
-                    CategoryId = category.Id,
-                    TargetMinutes = minutes
-                });
-            }
-
-            await db.SaveChangesAsync();
-
+            await _goalService.SaveGoalAsync(categoryName, minutes);
             await LoadGoalsAsync();
         }
     }
