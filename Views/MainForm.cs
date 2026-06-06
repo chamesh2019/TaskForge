@@ -11,6 +11,7 @@ using TaskForge.Tracking;
 using System.Linq;
 using System.Diagnostics;
 using Microsoft.Data.Sqlite;
+using TaskForge.Services;
 
 namespace TaskForge.Views
 {
@@ -27,6 +28,11 @@ namespace TaskForge.Views
             {
                 db.Database.EnsureCreated();
             }
+
+            _tracker = new WindowTracker();
+
+            LoadCategoriesIntoGoalComboBox();
+            LoadSavedGoals();
 
             // initialize tracker and start
             _tracker = new WindowTracker();
@@ -74,6 +80,8 @@ namespace TaskForge.Views
             await LoadCategoriesAsync();
             await LoadIgnoredAppsAsync();
             await LoadGoalsAsync();
+
+            LoadCategoriesIntoGoalComboBox();
         }
 
         private async Task<Dictionary<string, double>> GetTodayAppTimesAsync()
@@ -281,16 +289,16 @@ namespace TaskForge.Views
 
             cmbCategory.SelectedIndex = 0;
 
-            // fill goal category dropdown
-            cmbGoalCategory.Items.Clear();
+            //// fill goal category dropdown
+            //cmbGoalCategory.Items.Clear();
 
-            foreach (var c in categories)
-            {
-                cmbGoalCategory.Items.Add(c.Name);
-            }
+            //foreach (var c in categories)
+            //{
+            //    cmbGoalCategory.Items.Add(c.Name);
+            //}
 
-            if (cmbGoalCategory.Items.Count > 0)
-                cmbGoalCategory.SelectedIndex = 0;
+            //if (cmbGoalCategory.Items.Count > 0)
+            //    cmbGoalCategory.SelectedIndex = 0;
         }
 
         private async void btnAddCategory_Click(object sender, EventArgs e)
@@ -429,42 +437,157 @@ namespace TaskForge.Views
             }
         }
 
-        private async void btnSaveGoal_Click(object sender, EventArgs e)
+        //private async void btnSaveGoal_Click(object sender, EventArgs e)
+        //{
+        //    if (cmbGoalCategory.SelectedItem == null)
+        //        return;
+
+        //    string categoryName = cmbGoalCategory.SelectedItem.ToString();
+        //    int minutes = (int)numGoalMinutes.Value;
+
+        //    using var db = new AppDbContext();
+
+        //    var category = await db.Categories
+        //        .FirstOrDefaultAsync(c => c.Name == categoryName);
+
+        //    if (category == null)
+        //        return;
+
+        //    // check if goal already exists for this category
+        //    var existing = await db.DailyGoals
+        //        .FirstOrDefaultAsync(g => g.CategoryId == category.Id);
+
+        //    if (existing != null)
+        //    {
+        //        existing.TargetMinutes = minutes; // update
+        //    }
+        //    else
+        //    {
+        //        db.DailyGoals.Add(new DailyGoal
+        //        {
+        //            CategoryId = category.Id,
+        //            TargetMinutes = minutes
+        //        });
+        //    }
+
+        //    await db.SaveChangesAsync();
+
+        //    await LoadGoalsAsync();
+        //}
+
+        private void btnCheckGoals_Click(object sender, EventArgs e)
         {
-            if (cmbGoalCategory.SelectedItem == null)
-                return;
+            var service = new ProductivityService();
+            var messages = service.GetExceededGoalMessages();
 
-            string categoryName = cmbGoalCategory.SelectedItem.ToString();
-            int minutes = (int)numGoalMinutes.Value;
-
-            using var db = new AppDbContext();
-
-            var category = await db.Categories
-                .FirstOrDefaultAsync(c => c.Name == categoryName);
-
-            if (category == null)
-                return;
-
-            // check if goal already exists for this category
-            var existing = await db.DailyGoals
-                .FirstOrDefaultAsync(g => g.CategoryId == category.Id);
-
-            if (existing != null)
+            if (messages.Count == 0)
             {
-                existing.TargetMinutes = minutes; // update
+                MessageBox.Show("No goals exceeded today.");
             }
             else
             {
-                db.DailyGoals.Add(new DailyGoal
+                MessageBox.Show(string.Join(Environment.NewLine, messages));
+            }
+        }
+        private void LoadCategoriesIntoGoalComboBox()
+        {
+            using (var db = new AppDbContext())
+            {
+                var categories = db.Categories.ToList();
+
+                cmbGoalCategory.DataSource = categories;
+                cmbGoalCategory.DisplayMember = "Name";
+                cmbGoalCategory.ValueMember = "Id";
+                //cmbGoalCategory.SelectedIndex = -1;
+                if (categories.Count > 0)
+                    cmbGoalCategory.SelectedIndex = 0;
+            }
+        }
+
+        private void LoadSavedGoals()
+        {
+            lstGoals.Items.Clear();
+
+            using (var db = new AppDbContext())
+            {
+                var goals = db.DailyGoals.ToList();
+
+                foreach (var goal in goals)
                 {
-                    CategoryId = category.Id,
-                    TargetMinutes = minutes
-                });
+                    var categoryName = db.Categories
+                        .Where(c => c.Id == goal.CategoryId)
+                        .Select(c => c.Name)
+                        .FirstOrDefault() ?? "Unknown";
+
+                    lstGoals.Items.Add($"{categoryName} - {goal.TargetMinutes} minutes");
+                }
+            }
+        }
+
+        private void btnSaveGoal_Click(object sender, EventArgs e)
+        {
+            if (cmbGoalCategory.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a category.");
+                return;
             }
 
-            await db.SaveChangesAsync();
+            if (numGoalMinutes.Value <= 0)
+            {
+                MessageBox.Show("Please enter minutes greater than 0.");
+                return;
+            }
 
-            await LoadGoalsAsync();
+            var selectedCategory = (Category)cmbGoalCategory.SelectedItem;
+            int minutes = (int)numGoalMinutes.Value;
+
+            using (var db = new AppDbContext())
+            {
+                var existingGoal = db.DailyGoals
+                    .FirstOrDefault(g => g.CategoryId == selectedCategory.Id);
+
+                if (existingGoal == null)
+                {
+                    var goal = new DailyGoal
+                    {
+                        CategoryId = selectedCategory.Id,
+                        TargetMinutes = minutes
+                    };
+
+                    db.DailyGoals.Add(goal);
+                }
+                else
+                {
+                    existingGoal.TargetMinutes = minutes;
+                }
+
+                db.SaveChanges();
+            }
+
+            MessageBox.Show("Goal saved successfully.");
+            LoadSavedGoals();
+        }
+
+        private void btnCheckGoals_Click_1(object sender, EventArgs e)
+        {
+            var service = new ProductivityService();
+            var messages = service.GetExceededGoalMessages();
+
+            if (messages.Count == 0)
+            {
+                MessageBox.Show("No goals exceeded today.");
+            }
+            else
+            {
+                MessageBox.Show(string.Join(Environment.NewLine, messages));
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            AppCatergory form = new AppCatergory();
+            form.ShowDialog();
         }
     }
 }
+

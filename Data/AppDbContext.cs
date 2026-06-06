@@ -12,6 +12,8 @@ namespace TaskForge.Data
 
         public DbSet<DailyGoal> DailyGoals { get; set; }
 
+        public DbSet<App_Category> AppCategories { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Data Source=TaskForge.db");
