@@ -24,11 +24,13 @@ namespace TaskForge
             var ignoredAppRepo = new IgnoredAppRepository();
             var goalRepo = new DailyGoalRepository();
             var sessionRepo = new TrackedSessionRepository();
+            var appCategoryRepo = new AppCategoryRepository();
 
             var categoryService = new CategoryService(categoryRepo);
             var ignoredAppService = new IgnoredAppService(ignoredAppRepo);
             var notificationService = new NotificationService();
             var classificationService = new ClassificationService(categoryRepo);
+            var appCategoryService = new AppCategoryService(appCategoryRepo, sessionRepo);
             
             var goalService = new GoalService(
                 goalRepo, 
@@ -44,13 +46,21 @@ namespace TaskForge
                 goalService
             );
 
+            var productivityService = new ProductivityService(
+                goalRepo,
+                appCategoryRepo,
+                sessionRepo
+            );
+
             Application.Run(new MainForm(
                 dbInitializer,
                 categoryService,
                 ignoredAppService,
                 goalService,
                 trackingService,
-                notificationService
+                notificationService,
+                productivityService,
+                appCategoryService
             ));
         }
     }

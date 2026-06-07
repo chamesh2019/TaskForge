@@ -18,6 +18,8 @@ namespace TaskForge.Views
         private readonly IGoalService _goalService;
         private readonly ITrackingService _trackingService;
         private readonly INotificationService _notificationService;
+        private readonly IProductivityService _productivityService;
+        private readonly IAppCategoryService _appCategoryService;
 
         public MainForm(
             IDatabaseInitializer dbInitializer,
@@ -25,7 +27,9 @@ namespace TaskForge.Views
             IIgnoredAppService ignoredAppService,
             IGoalService goalService,
             ITrackingService trackingService,
-            INotificationService notificationService)
+            INotificationService notificationService,
+            IProductivityService productivityService,
+            IAppCategoryService appCategoryService)
         {
             InitializeComponent();
 
@@ -35,6 +39,8 @@ namespace TaskForge.Views
             _goalService = goalService;
             _trackingService = trackingService;
             _notificationService = notificationService;
+            _productivityService = productivityService;
+            _appCategoryService = appCategoryService;
 
             // Initialize database schema
             _dbInitializer.Initialize();
@@ -228,13 +234,12 @@ namespace TaskForge.Views
 
             cmbCategory.SelectedIndex = 0;
 
-            cmbGoalCategory.Items.Clear();
-            foreach (var c in categories)
-            {
-                cmbGoalCategory.Items.Add(c.Name);
-            }
+            // Bind categories to Goal combobox
+            cmbGoalCategory.DataSource = categories;
+            cmbGoalCategory.DisplayMember = "Name";
+            cmbGoalCategory.ValueMember = "Id";
 
-            if (cmbGoalCategory.Items.Count > 0)
+            if (categories.Count > 0)
                 cmbGoalCategory.SelectedIndex = 0;
         }
 
@@ -309,20 +314,63 @@ namespace TaskForge.Views
             foreach (var g in goals)
             {
                 string categoryName = g.Category?.Name ?? "Unknown";
-                lstGoals.Items.Add($"{categoryName} - {g.TargetMinutes} mins");
+                lstGoals.Items.Add($"{categoryName} - {g.TargetMinutes} minutes");
             }
         }
 
         private async void btnSaveGoal_Click(object sender, EventArgs e)
         {
             if (cmbGoalCategory.SelectedItem == null)
+            {
+                MessageBox.Show(this, "Please select a category.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
+            }
 
-            string categoryName = cmbGoalCategory.SelectedItem.ToString()!;
+            if (numGoalMinutes.Value <= 0)
+            {
+                MessageBox.Show(this, "Please enter minutes greater than 0.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var selectedCategory = (Category)cmbGoalCategory.SelectedItem;
             int minutes = (int)numGoalMinutes.Value;
 
-            await _goalService.SaveGoalAsync(categoryName, minutes);
-            await LoadGoalsAsync();
+            try
+            {
+                await _goalService.SaveGoalAsync(selectedCategory.Name, minutes);
+                MessageBox.Show(this, "Goal saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                await LoadGoalsAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"Error saving goal: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void btnCheckGoals_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                var messages = await _productivityService.GetExceededGoalMessagesAsync();
+                if (messages.Count == 0)
+                {
+                    MessageBox.Show(this, "No goals exceeded today.", "Productivity Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(this, string.Join(Environment.NewLine, messages), "Productivity Check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"Error checking goals: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            using var form = new AppCatergory(_appCategoryService, _categoryService);
+            form.ShowDialog(this);
         }
     }
 }
