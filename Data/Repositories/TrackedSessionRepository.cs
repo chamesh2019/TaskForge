@@ -12,15 +12,12 @@ namespace TaskForge.Data.Repositories
         public async Task AddAsync(TrackedSession session)
         {
             using var db = new AppDbContext();
-            // Re-attach or resolve category if set to avoid EF Core attempting to recreate Category
-            if (session.CategoryId.HasValue)
+            // Set default category ID to 1 (Neutral) if not classified
+            if (!session.CategoryId.HasValue)
             {
-                db.Entry(session).State = EntityState.Added;
+                session.CategoryId = 1;
             }
-            else
-            {
-                db.TrackedSessions.Add(session);
-            }
+            db.TrackedSessions.Add(session);
             await db.SaveChangesAsync();
         }
 
