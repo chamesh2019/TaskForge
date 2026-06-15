@@ -1,32 +1,44 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using TaskForge.Data;
+using System.Threading.Tasks;
+using TaskForge.Data.Repositories;
 
 namespace TaskForge.Services
 {
-    public class ProductivityService
+    public class ProductivityService : IProductivityService
     {
-        public List<string> GetExceededGoalMessages()
-        {
-            using var db = new AppDbContext();
+        private readonly IDailyGoalRepository _goalRepo;
+        private readonly IAppCategoryRepository _appCategoryRepo;
+        private readonly ITrackedSessionRepository _sessionRepo;
 
+        public ProductivityService(
+            IDailyGoalRepository goalRepo,
+            IAppCategoryRepository appCategoryRepo,
+            ITrackedSessionRepository sessionRepo)
+        {
+            _goalRepo = goalRepo;
+            _appCategoryRepo = appCategoryRepo;
+            _sessionRepo = sessionRepo;
+        }
+
+        public async Task<List<string>> GetExceededGoalMessagesAsync()
+        {
             var messages = new List<string>();
             var today = DateTime.Today;
 
-            var goals = db.DailyGoals.ToList();
+            // Fetch data through repositories asynchronously
+            var goals = await _goalRepo.GetAllWithCategoriesAsync();
+            var savedMappings = await _appCategoryRepo.GetAllAsync();
+            var sessions = await _sessionRepo.GetTodaySessionsAsync();
 
             foreach (var goal in goals)
             {
-                var categoryName = db.Categories
-                    .Where(c => c.Id == goal.CategoryId)
-                    .Select(c => c.Name)
-                    .FirstOrDefault();
-
+                var categoryName = goal.Category?.Name;
                 if (string.IsNullOrWhiteSpace(categoryName))
                     continue;
 
-                var mappedApps = db.AppCategories
+                var mappedApps = savedMappings
                     .Where(a => a.Category == categoryName)
                     .Select(a => a.AppName)
                     .ToList();
@@ -34,12 +46,10 @@ namespace TaskForge.Services
                 if (mappedApps.Count == 0)
                     continue;
 
-                var sessions = db.TrackedSessions
-                    .Where(s => s.StartTime.Date == today &&
-                                mappedApps.Contains(s.ApplicationName))
-                    .ToList();
-
-                double usedMinutes = sessions.Sum(s => s.Duration.TotalMinutes);
+                // Filter sessions by mapped application names
+                double usedMinutes = sessions
+                    .Where(s => mappedApps.Contains(s.ApplicationName))
+                    .Sum(s => s.Duration.TotalMinutes);
 
                 if (usedMinutes > goal.TargetMinutes)
                 {
