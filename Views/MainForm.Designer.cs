@@ -29,14 +29,15 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             panelDashboard = new Panel();
-            button1 = new Button();
+            chartDashboard = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            panel1 = new Panel();
             btnCheckGoals = new Button();
             lblTotalTime = new Label();
-            chartDashboard = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            button1 = new Button();
             panelHistory = new Panel();
             dataGridHistory = new DataGridView();
             panelFilters = new Panel();
@@ -83,8 +84,10 @@
             sqliteCommand1 = new Microsoft.Data.Sqlite.SqliteCommand();
             timerRefresh = new System.Windows.Forms.Timer(components);
             bindingSource1 = new BindingSource(components);
+            toolTip1 = new ToolTip(components);
             panelDashboard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)chartDashboard).BeginInit();
+            panel1.SuspendLayout();
             panelHistory.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridHistory).BeginInit();
             panelFilters.SuspendLayout();
@@ -100,15 +103,67 @@
             // 
             // panelDashboard
             // 
-            panelDashboard.Controls.Add(button1);
-            panelDashboard.Controls.Add(btnCheckGoals);
-            panelDashboard.Controls.Add(lblTotalTime);
             panelDashboard.Controls.Add(chartDashboard);
+            panelDashboard.Controls.Add(panel1);
             panelDashboard.Dock = DockStyle.Fill;
             panelDashboard.Location = new Point(0, 0);
             panelDashboard.Name = "panelDashboard";
             panelDashboard.Size = new Size(1000, 450);
             panelDashboard.TabIndex = 0;
+            // 
+            // chartDashboard
+            // 
+            chartArea1.Name = "ChartArea1";
+            chartDashboard.ChartAreas.Add(chartArea1);
+            chartDashboard.Dock = DockStyle.Fill;
+            legend1.Name = "Legend1";
+            chartDashboard.Legends.Add(legend1);
+            chartDashboard.Location = new Point(0, 98);
+            chartDashboard.Name = "chartDashboard";
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            chartDashboard.Series.Add(series1);
+            chartDashboard.Size = new Size(1000, 352);
+            chartDashboard.TabIndex = 0;
+            chartDashboard.Text = "chart1";
+            // 
+            // panel1
+            // 
+            panel1.BackColor = Color.White;
+            panel1.Controls.Add(btnCheckGoals);
+            panel1.Controls.Add(lblTotalTime);
+            panel1.Controls.Add(button1);
+            panel1.Dock = DockStyle.Top;
+            panel1.Location = new Point(0, 0);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(1000, 98);
+            panel1.TabIndex = 4;
+            // 
+            // btnCheckGoals
+            // 
+            btnCheckGoals.AutoSize = true;
+            btnCheckGoals.Location = new Point(649, 51);
+            btnCheckGoals.Name = "btnCheckGoals";
+            btnCheckGoals.Size = new Size(114, 30);
+            btnCheckGoals.TabIndex = 2;
+            btnCheckGoals.Text = "Check Goals";
+            toolTip1.SetToolTip(btnCheckGoals, "Check whether daily goals are exceeded or not.");
+            btnCheckGoals.UseVisualStyleBackColor = true;
+            btnCheckGoals.Click += btnCheckGoals_Click_1;
+            // 
+            // lblTotalTime
+            // 
+            lblTotalTime.AutoSize = true;
+            lblTotalTime.BackColor = Color.White;
+            lblTotalTime.Font = new Font("Yu Gothic UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblTotalTime.ForeColor = Color.Crimson;
+            lblTotalTime.Location = new Point(25, 53);
+            lblTotalTime.Name = "lblTotalTime";
+            lblTotalTime.Size = new Size(190, 23);
+            lblTotalTime.TabIndex = 1;
+            lblTotalTime.Text = "Total Time Today: 0 min";
             // 
             // button1
             // 
@@ -119,45 +174,6 @@
             button1.Text = "Edit App Category";
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
-            // 
-            // btnCheckGoals
-            // 
-            btnCheckGoals.Location = new Point(30, 119);
-            btnCheckGoals.Name = "btnCheckGoals";
-            btnCheckGoals.Size = new Size(94, 29);
-            btnCheckGoals.TabIndex = 2;
-            btnCheckGoals.Text = "Check Goals";
-            btnCheckGoals.UseVisualStyleBackColor = true;
-            btnCheckGoals.Click += btnCheckGoals_Click_1;
-            // 
-            // lblTotalTime
-            // 
-            lblTotalTime.AutoSize = true;
-            lblTotalTime.BackColor = Color.White;
-            lblTotalTime.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTotalTime.ForeColor = Color.Black;
-            lblTotalTime.Location = new Point(12, 57);
-            lblTotalTime.Name = "lblTotalTime";
-            lblTotalTime.Size = new Size(177, 20);
-            lblTotalTime.TabIndex = 1;
-            lblTotalTime.Text = "Total Time Today: 0 min";
-            // 
-            // chartDashboard
-            // 
-            chartArea3.Name = "ChartArea1";
-            chartDashboard.ChartAreas.Add(chartArea3);
-            legend3.Name = "Legend1";
-            chartDashboard.Legends.Add(legend3);
-            chartDashboard.Location = new Point(4, 99);
-            chartDashboard.Name = "chartDashboard";
-            series3.ChartArea = "ChartArea1";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series3.Legend = "Legend1";
-            series3.Name = "Series1";
-            chartDashboard.Series.Add(series3);
-            chartDashboard.Size = new Size(1000, 421);
-            chartDashboard.TabIndex = 0;
-            chartDashboard.Text = "chart1";
             // 
             // panelHistory
             // 
@@ -556,6 +572,7 @@
             // 
             // menuStrip1
             // 
+            menuStrip1.BackColor = Color.Transparent;
             menuStrip1.ImageScalingSize = new Size(20, 20);
             menuStrip1.Items.AddRange(new ToolStripItem[] { dashboardToolStripMenuItem, historyToolStripMenuItem, settingsToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
@@ -617,8 +634,9 @@
             Name = "MainForm";
             Text = "TaskForge";
             panelDashboard.ResumeLayout(false);
-            panelDashboard.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)chartDashboard).EndInit();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
             panelHistory.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dataGridHistory).EndInit();
             panelFilters.ResumeLayout(false);
@@ -692,5 +710,7 @@
         private BindingSource bindingSource1;
         private Button btnCheckGoals;
         private Button button1;
+        private Panel panel1;
+        private ToolTip toolTip1;
     }
 }
