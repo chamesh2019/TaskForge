@@ -189,18 +189,24 @@
             // dataGridHistory
             // 
             dataGridHistory.AllowUserToAddRows = false;
+            dataGridHistory.AllowUserToDeleteRows = false;
+            dataGridHistory.AllowUserToResizeColumns = false;
+            dataGridHistory.AllowUserToResizeRows = false;
+            dataGridHistory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridHistory.BackgroundColor = Color.White;
             dataGridHistory.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridHistory.Dock = DockStyle.Fill;
-            dataGridHistory.Location = new Point(0, 80);
+            dataGridHistory.Location = new Point(0, 98);
             dataGridHistory.Name = "dataGridHistory";
             dataGridHistory.ReadOnly = true;
             dataGridHistory.RowHeadersWidth = 51;
             dataGridHistory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridHistory.Size = new Size(1000, 370);
+            dataGridHistory.Size = new Size(1000, 352);
             dataGridHistory.TabIndex = 0;
             // 
             // panelFilters
             // 
+            panelFilters.BackColor = Color.White;
             panelFilters.Controls.Add(cmbCategory);
             panelFilters.Controls.Add(lblCategory);
             panelFilters.Controls.Add(dtTo);
@@ -212,7 +218,7 @@
             panelFilters.Dock = DockStyle.Top;
             panelFilters.Location = new Point(0, 0);
             panelFilters.Name = "panelFilters";
-            panelFilters.Size = new Size(1000, 80);
+            panelFilters.Size = new Size(1000, 98);
             panelFilters.TabIndex = 0;
             // 
             // cmbCategory
@@ -220,7 +226,7 @@
             cmbCategory.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbCategory.FormattingEnabled = true;
             cmbCategory.Items.AddRange(new object[] { "All", "Work", "Entertainment", "Other" });
-            cmbCategory.Location = new Point(788, 35);
+            cmbCategory.Location = new Point(798, 47);
             cmbCategory.Name = "cmbCategory";
             cmbCategory.Size = new Size(151, 28);
             cmbCategory.TabIndex = 8;
@@ -229,7 +235,7 @@
             // lblCategory
             // 
             lblCategory.AutoSize = true;
-            lblCategory.Location = new Point(710, 38);
+            lblCategory.Location = new Point(720, 50);
             lblCategory.Name = "lblCategory";
             lblCategory.Size = new Size(72, 20);
             lblCategory.TabIndex = 7;
@@ -238,7 +244,7 @@
             // dtTo
             // 
             dtTo.Format = DateTimePickerFormat.Short;
-            dtTo.Location = new Point(543, 36);
+            dtTo.Location = new Point(553, 48);
             dtTo.Name = "dtTo";
             dtTo.Size = new Size(100, 27);
             dtTo.TabIndex = 6;
@@ -247,7 +253,7 @@
             // dtFrom
             // 
             dtFrom.Format = DateTimePickerFormat.Short;
-            dtFrom.Location = new Point(374, 36);
+            dtFrom.Location = new Point(384, 48);
             dtFrom.Name = "dtFrom";
             dtFrom.Size = new Size(100, 27);
             dtFrom.TabIndex = 5;
@@ -256,7 +262,7 @@
             // lblTo
             // 
             lblTo.AutoSize = true;
-            lblTo.Location = new Point(509, 38);
+            lblTo.Location = new Point(519, 50);
             lblTo.Name = "lblTo";
             lblTo.Size = new Size(28, 20);
             lblTo.TabIndex = 4;
@@ -265,7 +271,7 @@
             // lblFrom
             // 
             lblFrom.AutoSize = true;
-            lblFrom.Location = new Point(322, 38);
+            lblFrom.Location = new Point(332, 50);
             lblFrom.Name = "lblFrom";
             lblFrom.Size = new Size(46, 20);
             lblFrom.TabIndex = 3;
@@ -275,7 +281,7 @@
             // 
             cmbApplication.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbApplication.FormattingEnabled = true;
-            cmbApplication.Location = new Point(107, 35);
+            cmbApplication.Location = new Point(117, 47);
             cmbApplication.Name = "cmbApplication";
             cmbApplication.Size = new Size(180, 28);
             cmbApplication.TabIndex = 1;
@@ -284,7 +290,7 @@
             // lblApplication
             // 
             lblApplication.AutoSize = true;
-            lblApplication.Location = new Point(12, 38);
+            lblApplication.Location = new Point(22, 50);
             lblApplication.Name = "lblApplication";
             lblApplication.Size = new Size(89, 20);
             lblApplication.TabIndex = 0;
@@ -627,7 +633,6 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1000, 450);
             Controls.Add(menuStrip1);
-            Controls.Add(panelDashboard);
             Controls.Add(panelHistory);
             Controls.Add(panelSettings);
             MainMenuStrip = menuStrip1;
