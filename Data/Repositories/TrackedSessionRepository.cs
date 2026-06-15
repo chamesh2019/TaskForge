@@ -68,5 +68,17 @@ namespace TaskForge.Data.Repositories
                 .OrderBy(name => name)
                 .ToListAsync();
         }
+
+        public async Task<List<string>> GetDistinctCategoryNamesAsync()
+        {
+            using var db = new AppDbContext();
+            return await db.TrackedSessions
+                .Include(s => s.Category)
+                .Where(s => s.Category != null)
+                .Select(s => s.Category!.Name)
+                .Distinct()
+                .OrderBy(name => name)
+                .ToListAsync();
+        }
     }
 }
