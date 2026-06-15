@@ -29,7 +29,7 @@ namespace TaskForge.Services
             foreach (var app in apps)
             {
                 var savedCategory = savedMappings
-                    .FirstOrDefault(x => x.AppName == app)?.Category ?? string.Empty;
+                    .FirstOrDefault(x => x.AppName == app)?.Category ?? "Neutral";
 
                 rows.Add(new AppCategoryRow
                 {

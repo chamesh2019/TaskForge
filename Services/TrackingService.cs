@@ -70,6 +70,11 @@ namespace TaskForge.Services
             return _sessionRepo.GetDistinctApplicationNamesAsync();
         }
 
+        public Task<List<string>> GetDistinctCategoryNamesAsync()
+        {
+            return _sessionRepo.GetDistinctCategoryNamesAsync();
+        }
+
         private void Tracker_ActiveWindowChanged(object? sender, TrackedSession e)
         {
             ActiveWindowChanged?.Invoke(this, e);

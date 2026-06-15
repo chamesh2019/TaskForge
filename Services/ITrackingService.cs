@@ -16,5 +16,6 @@ namespace TaskForge.Services
         Task<Dictionary<string, double>> GetTodayAppTimesAsync();
         Task<List<TrackedSession>> GetFilteredSessionsAsync(string selectedApp, DateTime from, DateTime to, string categoryName);
         Task<List<string>> GetDistinctApplicationNamesAsync();
+        Task<List<string>> GetDistinctCategoryNamesAsync();
     }
 }
