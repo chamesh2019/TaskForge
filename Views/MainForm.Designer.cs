@@ -29,10 +29,11 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             panelDashboard = new Panel();
+            button1 = new Button();
             btnCheckGoals = new Button();
             lblTotalTime = new Label();
             chartDashboard = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -82,7 +83,6 @@
             sqliteCommand1 = new Microsoft.Data.Sqlite.SqliteCommand();
             timerRefresh = new System.Windows.Forms.Timer(components);
             bindingSource1 = new BindingSource(components);
-            button1 = new Button();
             panelDashboard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)chartDashboard).BeginInit();
             panelHistory.SuspendLayout();
@@ -110,6 +110,16 @@
             panelDashboard.Size = new Size(1000, 450);
             panelDashboard.TabIndex = 0;
             // 
+            // button1
+            // 
+            button1.Location = new Point(788, 51);
+            button1.Name = "button1";
+            button1.Size = new Size(187, 29);
+            button1.TabIndex = 3;
+            button1.Text = "Edit App Category";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // btnCheckGoals
             // 
             btnCheckGoals.Location = new Point(30, 119);
@@ -134,17 +144,17 @@
             // 
             // chartDashboard
             // 
-            chartArea1.Name = "ChartArea1";
-            chartDashboard.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            chartDashboard.Legends.Add(legend1);
+            chartArea3.Name = "ChartArea1";
+            chartDashboard.ChartAreas.Add(chartArea3);
+            legend3.Name = "Legend1";
+            chartDashboard.Legends.Add(legend3);
             chartDashboard.Location = new Point(4, 99);
             chartDashboard.Name = "chartDashboard";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            chartDashboard.Series.Add(series1);
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            chartDashboard.Series.Add(series3);
             chartDashboard.Size = new Size(1000, 421);
             chartDashboard.TabIndex = 0;
             chartDashboard.Text = "chart1";
@@ -550,28 +560,35 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { dashboardToolStripMenuItem, historyToolStripMenuItem, settingsToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(1000, 28);
+            menuStrip1.Size = new Size(1000, 31);
             menuStrip1.TabIndex = 0;
             menuStrip1.Text = "menuStrip1";
             // 
             // dashboardToolStripMenuItem
             // 
+            dashboardToolStripMenuItem.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            dashboardToolStripMenuItem.ForeColor = Color.Black;
+            dashboardToolStripMenuItem.Image = Properties.Resources.dashboard_48;
             dashboardToolStripMenuItem.Name = "dashboardToolStripMenuItem";
-            dashboardToolStripMenuItem.Size = new Size(96, 24);
+            dashboardToolStripMenuItem.Size = new Size(131, 27);
             dashboardToolStripMenuItem.Text = "Dashboard";
             dashboardToolStripMenuItem.Click += dashboardToolStripMenuItem_Click;
             // 
             // historyToolStripMenuItem
             // 
+            historyToolStripMenuItem.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            historyToolStripMenuItem.Image = Properties.Resources.history_48;
             historyToolStripMenuItem.Name = "historyToolStripMenuItem";
-            historyToolStripMenuItem.Size = new Size(70, 24);
+            historyToolStripMenuItem.Size = new Size(103, 27);
             historyToolStripMenuItem.Text = "History";
             historyToolStripMenuItem.Click += historyToolStripMenuItem_Click;
             // 
             // settingsToolStripMenuItem
             // 
+            settingsToolStripMenuItem.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            settingsToolStripMenuItem.Image = Properties.Resources.setting_48;
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            settingsToolStripMenuItem.Size = new Size(76, 24);
+            settingsToolStripMenuItem.Size = new Size(110, 27);
             settingsToolStripMenuItem.Text = "Settings";
             settingsToolStripMenuItem.Click += settingsToolStripMenuItem_Click;
             // 
@@ -586,16 +603,6 @@
             // 
             timerRefresh.Interval = 5000;
             timerRefresh.Tick += timerRefresh_Tick;
-            // 
-            // button1
-            // 
-            button1.Location = new Point(788, 51);
-            button1.Name = "button1";
-            button1.Size = new Size(187, 29);
-            button1.TabIndex = 3;
-            button1.Text = "Edit App Category";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
             // 
             // MainForm
             // 
