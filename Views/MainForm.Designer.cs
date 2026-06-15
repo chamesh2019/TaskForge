@@ -33,9 +33,11 @@
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             panelDashboard = new Panel();
+            chartDashboard = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            panel1 = new Panel();
             btnCheckGoals = new Button();
             lblTotalTime = new Label();
-            chartDashboard = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            button1 = new Button();
             panelHistory = new Panel();
             dataGridHistory = new DataGridView();
             panelFilters = new Panel();
@@ -82,9 +84,10 @@
             sqliteCommand1 = new Microsoft.Data.Sqlite.SqliteCommand();
             timerRefresh = new System.Windows.Forms.Timer(components);
             bindingSource1 = new BindingSource(components);
-            button1 = new Button();
+            toolTip1 = new ToolTip(components);
             panelDashboard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)chartDashboard).BeginInit();
+            panel1.SuspendLayout();
             panelHistory.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridHistory).BeginInit();
             panelFilters.SuspendLayout();
@@ -100,23 +103,53 @@
             // 
             // panelDashboard
             // 
-            panelDashboard.Controls.Add(button1);
-            panelDashboard.Controls.Add(btnCheckGoals);
-            panelDashboard.Controls.Add(lblTotalTime);
             panelDashboard.Controls.Add(chartDashboard);
+            panelDashboard.Controls.Add(panel1);
             panelDashboard.Dock = DockStyle.Fill;
             panelDashboard.Location = new Point(0, 0);
             panelDashboard.Name = "panelDashboard";
             panelDashboard.Size = new Size(1000, 450);
             panelDashboard.TabIndex = 0;
             // 
+            // chartDashboard
+            // 
+            chartArea1.Name = "ChartArea1";
+            chartDashboard.ChartAreas.Add(chartArea1);
+            chartDashboard.Dock = DockStyle.Fill;
+            legend1.Name = "Legend1";
+            chartDashboard.Legends.Add(legend1);
+            chartDashboard.Location = new Point(0, 98);
+            chartDashboard.Name = "chartDashboard";
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            chartDashboard.Series.Add(series1);
+            chartDashboard.Size = new Size(1000, 352);
+            chartDashboard.TabIndex = 0;
+            chartDashboard.Text = "chart1";
+            // 
+            // panel1
+            // 
+            panel1.BackColor = Color.White;
+            panel1.Controls.Add(btnCheckGoals);
+            panel1.Controls.Add(lblTotalTime);
+            panel1.Controls.Add(button1);
+            panel1.Dock = DockStyle.Top;
+            panel1.Location = new Point(0, 0);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(1000, 98);
+            panel1.TabIndex = 4;
+            // 
             // btnCheckGoals
             // 
-            btnCheckGoals.Location = new Point(30, 119);
+            btnCheckGoals.AutoSize = true;
+            btnCheckGoals.Location = new Point(649, 51);
             btnCheckGoals.Name = "btnCheckGoals";
-            btnCheckGoals.Size = new Size(94, 29);
+            btnCheckGoals.Size = new Size(114, 30);
             btnCheckGoals.TabIndex = 2;
             btnCheckGoals.Text = "Check Goals";
+            toolTip1.SetToolTip(btnCheckGoals, "Check whether daily goals are exceeded or not.");
             btnCheckGoals.UseVisualStyleBackColor = true;
             btnCheckGoals.Click += btnCheckGoals_Click_1;
             // 
@@ -124,30 +157,23 @@
             // 
             lblTotalTime.AutoSize = true;
             lblTotalTime.BackColor = Color.White;
-            lblTotalTime.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTotalTime.ForeColor = Color.Black;
-            lblTotalTime.Location = new Point(12, 57);
+            lblTotalTime.Font = new Font("Yu Gothic UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblTotalTime.ForeColor = Color.Crimson;
+            lblTotalTime.Location = new Point(25, 53);
             lblTotalTime.Name = "lblTotalTime";
-            lblTotalTime.Size = new Size(177, 20);
+            lblTotalTime.Size = new Size(190, 23);
             lblTotalTime.TabIndex = 1;
             lblTotalTime.Text = "Total Time Today: 0 min";
             // 
-            // chartDashboard
+            // button1
             // 
-            chartArea1.Name = "ChartArea1";
-            chartDashboard.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            chartDashboard.Legends.Add(legend1);
-            chartDashboard.Location = new Point(4, 99);
-            chartDashboard.Name = "chartDashboard";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            chartDashboard.Series.Add(series1);
-            chartDashboard.Size = new Size(1000, 421);
-            chartDashboard.TabIndex = 0;
-            chartDashboard.Text = "chart1";
+            button1.Location = new Point(788, 51);
+            button1.Name = "button1";
+            button1.Size = new Size(187, 29);
+            button1.TabIndex = 3;
+            button1.Text = "Edit App Category";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // panelHistory
             // 
@@ -163,18 +189,24 @@
             // dataGridHistory
             // 
             dataGridHistory.AllowUserToAddRows = false;
+            dataGridHistory.AllowUserToDeleteRows = false;
+            dataGridHistory.AllowUserToResizeColumns = false;
+            dataGridHistory.AllowUserToResizeRows = false;
+            dataGridHistory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridHistory.BackgroundColor = Color.White;
             dataGridHistory.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridHistory.Dock = DockStyle.Fill;
-            dataGridHistory.Location = new Point(0, 80);
+            dataGridHistory.Location = new Point(0, 98);
             dataGridHistory.Name = "dataGridHistory";
             dataGridHistory.ReadOnly = true;
             dataGridHistory.RowHeadersWidth = 51;
             dataGridHistory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridHistory.Size = new Size(1000, 370);
+            dataGridHistory.Size = new Size(1000, 352);
             dataGridHistory.TabIndex = 0;
             // 
             // panelFilters
             // 
+            panelFilters.BackColor = Color.White;
             panelFilters.Controls.Add(cmbCategory);
             panelFilters.Controls.Add(lblCategory);
             panelFilters.Controls.Add(dtTo);
@@ -186,7 +218,7 @@
             panelFilters.Dock = DockStyle.Top;
             panelFilters.Location = new Point(0, 0);
             panelFilters.Name = "panelFilters";
-            panelFilters.Size = new Size(1000, 80);
+            panelFilters.Size = new Size(1000, 98);
             panelFilters.TabIndex = 0;
             // 
             // cmbCategory
@@ -194,7 +226,7 @@
             cmbCategory.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbCategory.FormattingEnabled = true;
             cmbCategory.Items.AddRange(new object[] { "All", "Work", "Entertainment", "Other" });
-            cmbCategory.Location = new Point(788, 35);
+            cmbCategory.Location = new Point(798, 47);
             cmbCategory.Name = "cmbCategory";
             cmbCategory.Size = new Size(151, 28);
             cmbCategory.TabIndex = 8;
@@ -203,7 +235,7 @@
             // lblCategory
             // 
             lblCategory.AutoSize = true;
-            lblCategory.Location = new Point(710, 38);
+            lblCategory.Location = new Point(720, 50);
             lblCategory.Name = "lblCategory";
             lblCategory.Size = new Size(72, 20);
             lblCategory.TabIndex = 7;
@@ -212,7 +244,7 @@
             // dtTo
             // 
             dtTo.Format = DateTimePickerFormat.Short;
-            dtTo.Location = new Point(543, 36);
+            dtTo.Location = new Point(553, 48);
             dtTo.Name = "dtTo";
             dtTo.Size = new Size(100, 27);
             dtTo.TabIndex = 6;
@@ -221,7 +253,7 @@
             // dtFrom
             // 
             dtFrom.Format = DateTimePickerFormat.Short;
-            dtFrom.Location = new Point(374, 36);
+            dtFrom.Location = new Point(384, 48);
             dtFrom.Name = "dtFrom";
             dtFrom.Size = new Size(100, 27);
             dtFrom.TabIndex = 5;
@@ -230,7 +262,7 @@
             // lblTo
             // 
             lblTo.AutoSize = true;
-            lblTo.Location = new Point(509, 38);
+            lblTo.Location = new Point(519, 50);
             lblTo.Name = "lblTo";
             lblTo.Size = new Size(28, 20);
             lblTo.TabIndex = 4;
@@ -239,7 +271,7 @@
             // lblFrom
             // 
             lblFrom.AutoSize = true;
-            lblFrom.Location = new Point(322, 38);
+            lblFrom.Location = new Point(332, 50);
             lblFrom.Name = "lblFrom";
             lblFrom.Size = new Size(46, 20);
             lblFrom.TabIndex = 3;
@@ -249,7 +281,7 @@
             // 
             cmbApplication.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbApplication.FormattingEnabled = true;
-            cmbApplication.Location = new Point(107, 35);
+            cmbApplication.Location = new Point(117, 47);
             cmbApplication.Name = "cmbApplication";
             cmbApplication.Size = new Size(180, 28);
             cmbApplication.TabIndex = 1;
@@ -258,7 +290,7 @@
             // lblApplication
             // 
             lblApplication.AutoSize = true;
-            lblApplication.Location = new Point(12, 38);
+            lblApplication.Location = new Point(22, 50);
             lblApplication.Name = "lblApplication";
             lblApplication.Size = new Size(89, 20);
             lblApplication.TabIndex = 0;
@@ -266,6 +298,7 @@
             // 
             // panelSettings
             // 
+            panelSettings.BackColor = Color.White;
             panelSettings.Controls.Add(tabSettings);
             panelSettings.Dock = DockStyle.Fill;
             panelSettings.Location = new Point(0, 0);
@@ -276,6 +309,8 @@
             // 
             // tabSettings
             // 
+            tabSettings.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tabSettings.Appearance = TabAppearance.Buttons;
             tabSettings.Controls.Add(tabPage1);
             tabSettings.Controls.Add(tabPage2);
             tabSettings.Controls.Add(tabPage3);
@@ -287,6 +322,7 @@
             // 
             // tabPage1
             // 
+            tabPage1.BackColor = Color.White;
             tabPage1.Controls.Add(lblExistingCategories);
             tabPage1.Controls.Add(lblAddCategory);
             tabPage1.Controls.Add(lblCategoryTitle);
@@ -294,13 +330,13 @@
             tabPage1.Controls.Add(btnAddCategory);
             tabPage1.Controls.Add(txtCategory);
             tabPage1.Controls.Add(lstCategories);
-            tabPage1.Location = new Point(4, 29);
+            tabPage1.ForeColor = Color.Black;
+            tabPage1.Location = new Point(4, 32);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(992, 388);
+            tabPage1.Size = new Size(992, 385);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Categories";
-            tabPage1.UseVisualStyleBackColor = true;
             // 
             // lblExistingCategories
             // 
@@ -367,6 +403,7 @@
             // 
             // tabPage2
             // 
+            tabPage2.BackColor = Color.White;
             tabPage2.Controls.Add(lblIgnoredList);
             tabPage2.Controls.Add(lblAddIgnore);
             tabPage2.Controls.Add(lblIgnoreTitle);
@@ -374,13 +411,12 @@
             tabPage2.Controls.Add(btnDeleteIgnore);
             tabPage2.Controls.Add(btnAddIgnore);
             tabPage2.Controls.Add(txtIgnoreApp);
-            tabPage2.Location = new Point(4, 29);
+            tabPage2.Location = new Point(4, 32);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(992, 388);
+            tabPage2.Size = new Size(992, 385);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Ignore List";
-            tabPage2.UseVisualStyleBackColor = true;
             // 
             // lblIgnoredList
             // 
@@ -447,6 +483,7 @@
             // 
             // tabPage3
             // 
+            tabPage3.BackColor = Color.White;
             tabPage3.Controls.Add(lblSavedGoals);
             tabPage3.Controls.Add(label1);
             tabPage3.Controls.Add(label3);
@@ -456,13 +493,12 @@
             tabPage3.Controls.Add(btnSaveGoal);
             tabPage3.Controls.Add(numGoalMinutes);
             tabPage3.Controls.Add(cmbGoalCategory);
-            tabPage3.Location = new Point(4, 29);
+            tabPage3.Location = new Point(4, 32);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(992, 388);
+            tabPage3.Size = new Size(992, 385);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Daily Goals";
-            tabPage3.UseVisualStyleBackColor = true;
             // 
             // lblSavedGoals
             // 
@@ -546,32 +582,40 @@
             // 
             // menuStrip1
             // 
+            menuStrip1.BackColor = Color.Transparent;
             menuStrip1.ImageScalingSize = new Size(20, 20);
             menuStrip1.Items.AddRange(new ToolStripItem[] { dashboardToolStripMenuItem, historyToolStripMenuItem, settingsToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(1000, 28);
+            menuStrip1.Size = new Size(1000, 31);
             menuStrip1.TabIndex = 0;
             menuStrip1.Text = "menuStrip1";
             // 
             // dashboardToolStripMenuItem
             // 
+            dashboardToolStripMenuItem.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            dashboardToolStripMenuItem.ForeColor = Color.Black;
+            dashboardToolStripMenuItem.Image = Properties.Resources.dashboard_48;
             dashboardToolStripMenuItem.Name = "dashboardToolStripMenuItem";
-            dashboardToolStripMenuItem.Size = new Size(96, 24);
+            dashboardToolStripMenuItem.Size = new Size(131, 27);
             dashboardToolStripMenuItem.Text = "Dashboard";
             dashboardToolStripMenuItem.Click += dashboardToolStripMenuItem_Click;
             // 
             // historyToolStripMenuItem
             // 
+            historyToolStripMenuItem.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            historyToolStripMenuItem.Image = Properties.Resources.history_48;
             historyToolStripMenuItem.Name = "historyToolStripMenuItem";
-            historyToolStripMenuItem.Size = new Size(70, 24);
+            historyToolStripMenuItem.Size = new Size(103, 27);
             historyToolStripMenuItem.Text = "History";
             historyToolStripMenuItem.Click += historyToolStripMenuItem_Click;
             // 
             // settingsToolStripMenuItem
             // 
+            settingsToolStripMenuItem.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            settingsToolStripMenuItem.Image = Properties.Resources.setting_48;
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            settingsToolStripMenuItem.Size = new Size(76, 24);
+            settingsToolStripMenuItem.Size = new Size(110, 27);
             settingsToolStripMenuItem.Text = "Settings";
             settingsToolStripMenuItem.Click += settingsToolStripMenuItem_Click;
             // 
@@ -587,16 +631,6 @@
             timerRefresh.Interval = 5000;
             timerRefresh.Tick += timerRefresh_Tick;
             // 
-            // button1
-            // 
-            button1.Location = new Point(788, 51);
-            button1.Name = "button1";
-            button1.Size = new Size(187, 29);
-            button1.TabIndex = 3;
-            button1.Text = "Edit App Category";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -610,8 +644,9 @@
             Name = "MainForm";
             Text = "TaskForge";
             panelDashboard.ResumeLayout(false);
-            panelDashboard.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)chartDashboard).EndInit();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
             panelHistory.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dataGridHistory).EndInit();
             panelFilters.ResumeLayout(false);
@@ -685,5 +720,7 @@
         private BindingSource bindingSource1;
         private Button btnCheckGoals;
         private Button button1;
+        private Panel panel1;
+        private ToolTip toolTip1;
     }
 }

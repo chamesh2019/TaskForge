@@ -163,6 +163,7 @@ namespace TaskForge.Views
                 s.Id,
                 s.ApplicationName,
                 s.WindowTitle,
+                Category = s.Category?.Name ?? "Neutral",
                 StartTime = s.StartTime.ToString("g"),
                 EndTime = s.EndTime?.ToString("g") ?? "_",
                 Duration = Math.Round(s.Duration.TotalMinutes, 2) + " mins"
@@ -186,6 +187,9 @@ namespace TaskForge.Views
 
             dtFrom.Value = DateTime.Today;
             dtTo.Value = DateTime.Today;
+
+            // Load categories for the history filter
+            await LoadCategoriesAsync();
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -224,12 +228,15 @@ namespace TaskForge.Views
                 lstCategories.Items.Add(c.Name);
             }
 
+            // Get only categories that have tracked sessions
+            var validCategoryNames = await _trackingService.GetDistinctCategoryNamesAsync();
+
             cmbCategory.Items.Clear();
             cmbCategory.Items.Add("All");
 
-            foreach (var c in categories)
+            foreach (var categoryName in validCategoryNames)
             {
-                cmbCategory.Items.Add(c.Name);
+                cmbCategory.Items.Add(categoryName);
             }
 
             cmbCategory.SelectedIndex = 0;
