@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             panelDashboard = new Panel();
             chartDashboard = new System.Windows.Forms.DataVisualization.Charting.Chart();
             panel1 = new Panel();
@@ -113,18 +113,18 @@
             // 
             // chartDashboard
             // 
-            chartArea1.Name = "ChartArea1";
-            chartDashboard.ChartAreas.Add(chartArea1);
+            chartArea2.Name = "ChartArea1";
+            chartDashboard.ChartAreas.Add(chartArea2);
             chartDashboard.Dock = DockStyle.Fill;
-            legend1.Name = "Legend1";
-            chartDashboard.Legends.Add(legend1);
+            legend2.Name = "Legend1";
+            chartDashboard.Legends.Add(legend2);
             chartDashboard.Location = new Point(0, 98);
             chartDashboard.Name = "chartDashboard";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            chartDashboard.Series.Add(series1);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            chartDashboard.Series.Add(series2);
             chartDashboard.Size = new Size(1000, 352);
             chartDashboard.TabIndex = 0;
             chartDashboard.Text = "chart1";
@@ -298,6 +298,7 @@
             // 
             // panelSettings
             // 
+            panelSettings.BackColor = Color.White;
             panelSettings.Controls.Add(tabSettings);
             panelSettings.Dock = DockStyle.Fill;
             panelSettings.Location = new Point(0, 0);
@@ -308,6 +309,8 @@
             // 
             // tabSettings
             // 
+            tabSettings.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tabSettings.Appearance = TabAppearance.Buttons;
             tabSettings.Controls.Add(tabPage1);
             tabSettings.Controls.Add(tabPage2);
             tabSettings.Controls.Add(tabPage3);
@@ -319,6 +322,7 @@
             // 
             // tabPage1
             // 
+            tabPage1.BackColor = Color.White;
             tabPage1.Controls.Add(lblExistingCategories);
             tabPage1.Controls.Add(lblAddCategory);
             tabPage1.Controls.Add(lblCategoryTitle);
@@ -326,13 +330,12 @@
             tabPage1.Controls.Add(btnAddCategory);
             tabPage1.Controls.Add(txtCategory);
             tabPage1.Controls.Add(lstCategories);
-            tabPage1.Location = new Point(4, 29);
+            tabPage1.Location = new Point(4, 32);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(992, 388);
+            tabPage1.Size = new Size(992, 385);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Categories";
-            tabPage1.UseVisualStyleBackColor = true;
             // 
             // lblExistingCategories
             // 
@@ -406,10 +409,10 @@
             tabPage2.Controls.Add(btnDeleteIgnore);
             tabPage2.Controls.Add(btnAddIgnore);
             tabPage2.Controls.Add(txtIgnoreApp);
-            tabPage2.Location = new Point(4, 29);
+            tabPage2.Location = new Point(4, 32);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(992, 388);
+            tabPage2.Size = new Size(992, 385);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Ignore List";
             tabPage2.UseVisualStyleBackColor = true;
@@ -488,10 +491,10 @@
             tabPage3.Controls.Add(btnSaveGoal);
             tabPage3.Controls.Add(numGoalMinutes);
             tabPage3.Controls.Add(cmbGoalCategory);
-            tabPage3.Location = new Point(4, 29);
+            tabPage3.Location = new Point(4, 32);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(992, 388);
+            tabPage3.Size = new Size(992, 385);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Daily Goals";
             tabPage3.UseVisualStyleBackColor = true;
@@ -633,7 +636,6 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1000, 450);
             Controls.Add(menuStrip1);
-            Controls.Add(panelHistory);
             Controls.Add(panelSettings);
             MainMenuStrip = menuStrip1;
             Name = "MainForm";
