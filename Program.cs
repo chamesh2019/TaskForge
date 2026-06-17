@@ -52,6 +52,8 @@ namespace TaskForge
                 sessionRepo
             );
 
+            var dbBackupService = new DatabaseBackupService();
+
             Application.Run(new MainForm(
                 dbInitializer,
                 categoryService,
@@ -60,7 +62,8 @@ namespace TaskForge
                 trackingService,
                 notificationService,
                 productivityService,
-                appCategoryService
+                appCategoryService,
+                dbBackupService
             ));
         }
     }

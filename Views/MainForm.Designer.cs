@@ -1,4 +1,4 @@
-﻿namespace TaskForge.Views
+namespace TaskForge.Views
 {
     partial class MainForm
     {
@@ -38,6 +38,8 @@
             btnCheckGoals = new Button();
             lblTotalTime = new Label();
             button1 = new Button();
+            btnExport = new Button();
+            btnImport = new Button();
             panelHistory = new Panel();
             dataGridHistory = new DataGridView();
             panelFilters = new Panel();
@@ -132,6 +134,8 @@
             // panel1
             // 
             panel1.BackColor = Color.White;
+            panel1.Controls.Add(btnExport);
+            panel1.Controls.Add(btnImport);
             panel1.Controls.Add(btnCheckGoals);
             panel1.Controls.Add(lblTotalTime);
             panel1.Controls.Add(button1);
@@ -140,6 +144,24 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(1000, 98);
             panel1.TabIndex = 4;
+            // 
+            // btnExport
+            // 
+            btnExport.Location = new Point(380, 51);
+            btnExport.Name = "btnExport";
+            btnExport.Size = new Size(120, 29);
+            btnExport.TabIndex = 4;
+            btnExport.Text = "Export Database";
+            btnExport.UseVisualStyleBackColor = true;
+            // 
+            // btnImport
+            // 
+            btnImport.Location = new Point(510, 51);
+            btnImport.Name = "btnImport";
+            btnImport.Size = new Size(120, 29);
+            btnImport.TabIndex = 5;
+            btnImport.Text = "Import Database";
+            btnImport.UseVisualStyleBackColor = true;
             // 
             // btnCheckGoals
             // 
@@ -722,5 +744,7 @@
         private Button button1;
         private Panel panel1;
         private ToolTip toolTip1;
+        private Button btnExport;
+        private Button btnImport;
     }
 }

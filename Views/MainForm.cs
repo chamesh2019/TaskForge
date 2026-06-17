@@ -20,6 +20,7 @@ namespace TaskForge.Views
         private readonly INotificationService _notificationService;
         private readonly IProductivityService _productivityService;
         private readonly IAppCategoryService _appCategoryService;
+        private readonly IDatabaseBackupService _dbBackupService;
 
         public MainForm(
             IDatabaseInitializer dbInitializer,
@@ -29,7 +30,8 @@ namespace TaskForge.Views
             ITrackingService trackingService,
             INotificationService notificationService,
             IProductivityService productivityService,
-            IAppCategoryService appCategoryService)
+            IAppCategoryService appCategoryService,
+            IDatabaseBackupService dbBackupService)
         {
             InitializeComponent();
 
@@ -41,6 +43,7 @@ namespace TaskForge.Views
             _notificationService = notificationService;
             _productivityService = productivityService;
             _appCategoryService = appCategoryService;
+            _dbBackupService = dbBackupService;
 
             // Initialize database schema
             _dbInitializer.Initialize();
@@ -63,6 +66,9 @@ namespace TaskForge.Views
             btnDeleteIgnore.Click += btnDeleteIgnore_Click;
 
             btnSaveGoal.Click += btnSaveGoal_Click;
+
+            btnExport.Click += btnExport_Click;
+            btnImport.Click += btnImport_Click;
 
             timerRefresh.Start();
         }
@@ -378,6 +384,80 @@ namespace TaskForge.Views
         {
             using var form = new AppCatergory(_appCategoryService, _categoryService);
             form.ShowDialog(this);
+        }
+
+        private async void btnExport_Click(object? sender, EventArgs e)
+        {
+            using var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*",
+                Title = "Export Database Backup",
+                DefaultExt = "json",
+                FileName = $"TaskForge_Backup_{DateTime.Now:yyyyMMdd_HHmmss}"
+            };
+
+            if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                string filePath = saveFileDialog.FileName;
+
+                try
+                {
+                    await _dbBackupService.ExportToJsonAsync(filePath);
+                    MessageBox.Show(this, "Database exported successfully!", "Export Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(this, $"Error exporting database: {ex.Message}", "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private async void btnImport_Click(object? sender, EventArgs e)
+        {
+            var result = MessageBox.Show(this, 
+                "Importing a database backup will overwrite all existing data. Are you sure you want to proceed?", 
+                "Confirm Import", 
+                MessageBoxButtons.YesNo, 
+                MessageBoxIcon.Warning);
+
+            if (result != DialogResult.Yes) return;
+
+            using var openFileDialog = new OpenFileDialog
+            {
+                Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*",
+                Title = "Import Database Backup"
+            };
+
+            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                string filePath = openFileDialog.FileName;
+
+                try
+                {
+                    // Temporarily stop tracking before import to avoid database lock and inconsistent tracking state
+                    _trackingService.StopTracking();
+
+                    await _dbBackupService.ImportFromJsonAsync(filePath);
+
+                    // Reload/Refresh UI components
+                    LoadChartData();
+                    LoadApplicationFilter();
+                    await LoadCategoriesAsync();
+                    await LoadIgnoredAppsAsync();
+                    await LoadGoalsAsync();
+
+                    MessageBox.Show(this, "Database imported successfully!", "Import Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(this, $"Error importing database: {ex.Message}", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    // Restart tracking after import is complete/failed
+                    _trackingService.StartTracking();
+                }
+            }
         }
     }
 }
