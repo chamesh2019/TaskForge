@@ -23,7 +23,10 @@ namespace TaskForge.Services
                 .Select(g => new ApplicationReportDto
                 {
                     ApplicationName = g.Key,
-                    TotalMinutes = g.Sum(x => x.Duration.TotalMinutes)
+                    TotalMinutes = Math.Round(
+    g.Sum(x => x.Duration.TotalMinutes),
+    2
+)
                 })
                 .OrderByDescending(x => x.TotalMinutes)
                 .ToList();
@@ -39,10 +42,15 @@ namespace TaskForge.Services
                 .Select(g => new CategoryReportDto
                 {
                     CategoryName = g.Key,
-                    TotalMinutes = g.Sum(x => x.Duration.TotalMinutes)
+                    TotalMinutes = Math.Round(
+    g.Sum(x => x.Duration.TotalMinutes),
+    2
+)
                 })
                 .OrderByDescending(x => x.TotalMinutes)
                 .ToList();
         }
+
+       
     }
 }

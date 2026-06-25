@@ -54,6 +54,8 @@ namespace TaskForge
 
             var dbBackupService = new DatabaseBackupService();
 
+            var reportService = new ReportService(sessionRepo);
+
             Application.Run(new MainForm(
                 dbInitializer,
                 categoryService,

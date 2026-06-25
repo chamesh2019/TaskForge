@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TaskForge.Data;
+using TaskForge.Data.Repositories;
 using TaskForge.Services;
 using TaskForge.Tracking;
+
 
 namespace TaskForge.Views
 {
@@ -71,6 +73,10 @@ namespace TaskForge.Views
             btnImport.Click += btnImport_Click;
 
             timerRefresh.Start();
+           
+
+            OpenReportsForm();
+
         }
 
         private void NotificationService_NotificationTriggered(object? sender, string message)
@@ -383,6 +389,16 @@ namespace TaskForge.Views
         private void button1_Click(object sender, EventArgs e)
         {
             using var form = new AppCatergory(_appCategoryService, _categoryService);
+            form.ShowDialog(this);
+        }
+
+        private void OpenReportsForm()
+        {
+            var reportService = new ReportService(
+                new TrackedSessionRepository());
+
+            using var form = new ReportsForm(reportService);
+
             form.ShowDialog(this);
         }
 
