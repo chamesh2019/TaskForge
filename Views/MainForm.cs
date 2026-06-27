@@ -73,9 +73,9 @@ namespace TaskForge.Views
             btnImport.Click += btnImport_Click;
 
             timerRefresh.Start();
-           
 
-            OpenReportsForm();
+
+            //OpenReportsForm();
 
         }
 
@@ -84,7 +84,7 @@ namespace TaskForge.Views
             // Goals checks run in a background thread, so marshal back to UI thread
             if (InvokeRequired)
             {
-                BeginInvoke(new Action(() => 
+                BeginInvoke(new Action(() =>
                     MessageBox.Show(this, message, "Daily Goal Achieved", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 ));
             }
@@ -430,10 +430,10 @@ namespace TaskForge.Views
 
         private async void btnImport_Click(object? sender, EventArgs e)
         {
-            var result = MessageBox.Show(this, 
-                "Importing a database backup will overwrite all existing data. Are you sure you want to proceed?", 
-                "Confirm Import", 
-                MessageBoxButtons.YesNo, 
+            var result = MessageBox.Show(this,
+                "Importing a database backup will overwrite all existing data. Are you sure you want to proceed?",
+                "Confirm Import",
+                MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning);
 
             if (result != DialogResult.Yes) return;
@@ -474,6 +474,18 @@ namespace TaskForge.Views
                     _trackingService.StartTracking();
                 }
             }
+        }
+
+        private void reportsToolStripMenuItem_Click(object sender, EventArgs e)
+
+        {
+
+            var reportService = new ReportService(new TrackedSessionRepository());
+
+            using var form = new ReportsForm(reportService);
+
+            form.ShowDialog(this);
+
         }
     }
 }
