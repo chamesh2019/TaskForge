@@ -31,6 +31,16 @@ namespace TaskForge.Data.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<TrackedSession>> GetSessionsAsync(DateTime from, DateTime to)
+        {
+            using var db = new AppDbContext();
+
+            return await db.TrackedSessions
+                .Include(s => s.Category)
+                .Where(s => s.StartTime >= from && s.StartTime <= to)
+                .ToListAsync();
+        }
+
         public async Task<List<TrackedSession>> GetFilteredSessionsAsync(string selectedApp, DateTime from, DateTime to, string categoryName)
         {
             using var db = new AppDbContext();
