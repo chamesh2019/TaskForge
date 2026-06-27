@@ -7,12 +7,12 @@ using TaskForge.Services;
 
 namespace TaskForge.Views
 {
-    public partial class AppCatergory : Form
+    public partial class AppCategory : Form
     {
         private readonly IAppCategoryService _appCategoryService;
         private readonly ICategoryService _categoryService;
 
-        public AppCatergory(IAppCategoryService appCategoryService, ICategoryService categoryService)
+        public AppCategory(IAppCategoryService appCategoryService, ICategoryService categoryService)
         {
             InitializeComponent();
 

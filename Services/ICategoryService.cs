@@ -8,6 +8,6 @@ namespace TaskForge.Services
     {
         Task<List<Category>> GetAllCategoriesAsync();
         Task<bool> AddCategoryAsync(string name);
-        Task DeleteCategoryAsync(string name);
+        Task<bool> DeleteCategoryAsync(string name);
     }
 }

@@ -12,10 +12,10 @@ namespace TaskForge.Data.Repositories
         public async Task AddAsync(TrackedSession session)
         {
             using var db = new AppDbContext();
-            // Set default category ID to 1 (Neutral) if not classified
             if (!session.CategoryId.HasValue)
             {
-                session.CategoryId = 1;
+                var neutral = await db.Categories.FirstOrDefaultAsync(c => c.Name == "Neutral");
+                session.CategoryId = neutral?.Id ?? 1;
             }
             db.TrackedSessions.Add(session);
             await db.SaveChangesAsync();

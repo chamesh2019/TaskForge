@@ -10,10 +10,12 @@ namespace TaskForge.Services
     public class ClassificationService : IClassificationService
     {
         private readonly ICategoryRepository _categoryRepo;
+        private readonly IAppCategoryRepository _appCategoryRepo;
 
-        public ClassificationService(ICategoryRepository categoryRepo)
+        public ClassificationService(ICategoryRepository categoryRepo, IAppCategoryRepository appCategoryRepo)
         {
             _categoryRepo = categoryRepo;
+            _appCategoryRepo = appCategoryRepo;
         }
 
         public async Task<int?> ClassifySessionAsync(TrackedSession session)
@@ -26,7 +28,19 @@ namespace TaskForge.Services
             string app = session.ApplicationName.ToLowerInvariant();
             string title = session.WindowTitle.ToLowerInvariant();
 
-            // 1. Exact or partial match of application name / window title with category names
+            // 1. Check user-defined manual application-to-category mappings first
+            var mappings = await _appCategoryRepo.GetAllAsync();
+            var matchedMapping = mappings.FirstOrDefault(m => m.AppName.Equals(session.ApplicationName, StringComparison.OrdinalIgnoreCase));
+            if (matchedMapping != null)
+            {
+                var category = categories.FirstOrDefault(c => c.Name.Equals(matchedMapping.Category, StringComparison.OrdinalIgnoreCase));
+                if (category != null)
+                {
+                    return category.Id;
+                }
+            }
+
+            // 2. Exact or partial match of application name / window title with category names
             foreach (var category in categories)
             {
                 string catName = category.Name.ToLowerInvariant();
@@ -36,7 +50,7 @@ namespace TaskForge.Services
                 }
             }
 
-            // 2. Built-in heuristics for common category terms
+            // 3. Built-in heuristics for common category terms
             // Let's find matches based on common keywords
             var categoryMap = new Dictionary<string, Func<string, string, bool>>
             {
@@ -58,7 +72,7 @@ namespace TaskForge.Services
                 }
             }
 
-            // 3. Fallback: try mapping category names as substrings of application name
+            // 4. Fallback: try mapping category names as substrings of application name
             foreach (var category in categories)
             {
                 string catName = category.Name.ToLowerInvariant();
