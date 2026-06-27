@@ -1,6 +1,6 @@
-﻿namespace TaskForge.Views
+namespace TaskForge.Views
 {
-    partial class AppCatergory
+    partial class AppCategory
     {
         /// <summary>
         /// Required designer variable.
@@ -83,8 +83,8 @@
             ClientSize = new Size(800, 450);
             Controls.Add(panel2);
             Controls.Add(panel1);
-            Name = "AppCatergory";
-            Text = "AddCatergory";
+            Name = "AppCategory";
+            Text = "AddCategory";
             panel1.ResumeLayout(false);
             panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)appCategoryData).EndInit();

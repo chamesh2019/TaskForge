@@ -33,16 +33,24 @@ namespace TaskForge.Services
             return true;
         }
 
-        public async Task DeleteCategoryAsync(string name)
+        public async Task<bool> DeleteCategoryAsync(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                return;
+                return false;
 
-            var category = await _categoryRepo.GetByNameAsync(name);
+            string cleanName = name.Trim();
+            if (cleanName.Equals("Neutral", System.StringComparison.OrdinalIgnoreCase))
+            {
+                return false; // Prevent deleting default category
+            }
+
+            var category = await _categoryRepo.GetByNameAsync(cleanName);
             if (category != null)
             {
                 await _categoryRepo.DeleteAsync(category);
+                return true;
             }
+            return false;
         }
     }
 }

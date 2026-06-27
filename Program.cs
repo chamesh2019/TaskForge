@@ -29,7 +29,7 @@ namespace TaskForge
             var categoryService = new CategoryService(categoryRepo);
             var ignoredAppService = new IgnoredAppService(ignoredAppRepo);
             var notificationService = new NotificationService();
-            var classificationService = new ClassificationService(categoryRepo);
+            var classificationService = new ClassificationService(categoryRepo, appCategoryRepo);
             var appCategoryService = new AppCategoryService(appCategoryRepo, sessionRepo);
             
             var goalService = new GoalService(

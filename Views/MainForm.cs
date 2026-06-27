@@ -284,7 +284,12 @@ namespace TaskForge.Views
                 return;
 
             string selected = lstCategories.SelectedItem.ToString()!;
-            await _categoryService.DeleteCategoryAsync(selected);
+            bool deleted = await _categoryService.DeleteCategoryAsync(selected);
+            if (!deleted)
+            {
+                MessageBox.Show(this, "The default 'Neutral' category cannot be deleted.", "Delete Category", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             await LoadCategoriesAsync();
         }
 
@@ -388,7 +393,7 @@ namespace TaskForge.Views
 
         private void button1_Click(object sender, EventArgs e)
         {
-            using var form = new AppCatergory(_appCategoryService, _categoryService);
+            using var form = new AppCategory(_appCategoryService, _categoryService);
             form.ShowDialog(this);
         }
 
