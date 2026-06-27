@@ -31,6 +31,7 @@
             dataGridReports = new DataGridView();
             btnLoadApplications = new Button();
             btnLoadCategories = new Button();
+            btnCharts = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridReports).BeginInit();
             SuspendLayout();
             // 
@@ -45,7 +46,7 @@
             // 
             // btnLoadApplications
             // 
-            btnLoadApplications.Location = new Point(753, 46);
+            btnLoadApplications.Location = new Point(753, 57);
             btnLoadApplications.Name = "btnLoadApplications";
             btnLoadApplications.Size = new Size(359, 150);
             btnLoadApplications.TabIndex = 1;
@@ -55,7 +56,7 @@
             // 
             // btnLoadCategories
             // 
-            btnLoadCategories.Location = new Point(753, 322);
+            btnLoadCategories.Location = new Point(753, 293);
             btnLoadCategories.Name = "btnLoadCategories";
             btnLoadCategories.Size = new Size(359, 150);
             btnLoadCategories.TabIndex = 2;
@@ -63,11 +64,23 @@
             btnLoadCategories.UseVisualStyleBackColor = true;
             btnLoadCategories.Click += btnLoadCategories_Click;
             // 
+            // btnCharts
+            // 
+            btnCharts.Location = new Point(753, 528);
+            btnCharts.Name = "btnCharts";
+            btnCharts.Size = new Size(359, 150);
+            btnCharts.TabIndex = 4;
+            btnCharts.Text = "Charts";
+            btnCharts.UseVisualStyleBackColor = true;
+            btnCharts.Click += btnCharts_Click;
+
+            // 
             // ReportsForm
             // 
             AutoScaleDimensions = new SizeF(12F, 30F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1193, 761);
+            Controls.Add(btnCharts);
             Controls.Add(btnLoadCategories);
             Controls.Add(btnLoadApplications);
             Controls.Add(dataGridReports);
@@ -82,5 +95,7 @@
         private DataGridView dataGridReports;
         private Button btnLoadApplications;
         private Button btnLoadCategories;
+        private Button Weekly_Chart;
+        private Button btnCharts;
     }
 }

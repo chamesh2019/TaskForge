@@ -12,5 +12,7 @@ namespace TaskForge.Data.Repositories
         Task<List<TrackedSession>> GetFilteredSessionsAsync(string selectedApp, DateTime from, DateTime to, string categoryName);
         Task<List<string>> GetDistinctApplicationNamesAsync();
         Task<List<string>> GetDistinctCategoryNamesAsync();
+
+        Task<List<TrackedSession>> GetSessionsAsync(DateTime from, DateTime to);
     }
 }

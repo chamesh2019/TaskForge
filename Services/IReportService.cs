@@ -9,5 +9,7 @@ namespace TaskForge.Services
         Task<List<ApplicationReportDto>> GetApplicationSummaryAsync();
 
         Task<List<CategoryReportDto>> GetCategorySummaryAsync();
+
+        Task<List<WeeklyReportDto>> GetWeeklySummaryAsync();
     }
 }

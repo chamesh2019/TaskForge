@@ -26,6 +26,10 @@ namespace TaskForge.Views
             dataGridReports.DataSource = report;
         }
 
-        
+        private void btnCharts_Click(object sender, EventArgs e)
+        {
+            using var form = new ChartReportForm(_reportService);
+            form.ShowDialog(this);
+        }
     }
 }
