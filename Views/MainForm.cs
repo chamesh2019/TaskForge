@@ -24,6 +24,9 @@ namespace TaskForge.Views
         private readonly IAppCategoryService _appCategoryService;
         private readonly IDatabaseBackupService _dbBackupService;
 
+        private NotifyIcon? _notifyIcon;
+        private bool _allowClose = false;
+
         public MainForm(
             IDatabaseInitializer dbInitializer,
             ICategoryService categoryService,
@@ -74,9 +77,7 @@ namespace TaskForge.Views
 
             timerRefresh.Start();
 
-
-            //OpenReportsForm();
-
+            InitializeSystemTray();
         }
 
         private void NotificationService_NotificationTriggered(object? sender, string message)
@@ -84,9 +85,19 @@ namespace TaskForge.Views
             // Goals checks run in a background thread, so marshal back to UI thread
             if (InvokeRequired)
             {
-                BeginInvoke(new Action(() =>
-                    MessageBox.Show(this, message, "Daily Goal Achieved", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                ));
+                BeginInvoke(new Action(() => ShowNotification(message)));
+            }
+            else
+            {
+                ShowNotification(message);
+            }
+        }
+
+        private void ShowNotification(string message)
+        {
+            if (_notifyIcon != null)
+            {
+                _notifyIcon.ShowBalloonTip(5000, "Daily Goal Achieved", message, ToolTipIcon.Info);
             }
             else
             {
@@ -206,7 +217,43 @@ namespace TaskForge.Views
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            if (!_allowClose && e.CloseReason == CloseReason.UserClosing)
+            {
+                var result = MessageBox.Show(this, 
+                    "Do you want to minimize TaskForge to the system tray to keep tracking active in the background?\n\nChoose 'Yes' to hide to tray, 'No' to close/exit the application completely, or 'Cancel' to keep the window open.", 
+                    "Exit TaskForge", 
+                    MessageBoxButtons.YesNoCancel, 
+                    MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    e.Cancel = true;
+                    this.Hide();
+                    if (_notifyIcon != null)
+                    {
+                        _notifyIcon.ShowBalloonTip(3000, "TaskForge", "Application minimized to system tray. Tracking is active in the background.", ToolTipIcon.Info);
+                    }
+                    return;
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                else // DialogResult.No
+                {
+                    _allowClose = true;
+                }
+            }
+
             _trackingService.StopTracking();
+
+            if (_notifyIcon != null)
+            {
+                _notifyIcon.Visible = false;
+                _notifyIcon.Dispose();
+            }
+
             base.OnFormClosing(e);
         }
 
@@ -491,6 +538,46 @@ namespace TaskForge.Views
 
             form.ShowDialog(this);
 
+        }
+
+        private void InitializeSystemTray()
+        {
+            _notifyIcon = new NotifyIcon
+            {
+                Icon = this.Icon ?? SystemIcons.Application,
+                Text = "TaskForge Tracker",
+                Visible = true
+            };
+
+            var contextMenu = new ContextMenuStrip();
+            
+            var showItem = new ToolStripMenuItem("Show Dashboard", null, (s, e) => {
+                this.Show();
+                this.WindowState = FormWindowState.Normal;
+                this.Activate();
+            });
+
+            var hideItem = new ToolStripMenuItem("Hide to Tray", null, (s, e) => {
+                this.Hide();
+            });
+
+            var exitItem = new ToolStripMenuItem("Exit Application", null, (s, e) => {
+                _allowClose = true;
+                Application.Exit();
+            });
+
+            contextMenu.Items.Add(showItem);
+            contextMenu.Items.Add(hideItem);
+            contextMenu.Items.Add(new ToolStripSeparator());
+            contextMenu.Items.Add(exitItem);
+
+            _notifyIcon.ContextMenuStrip = contextMenu;
+
+            _notifyIcon.DoubleClick += (s, e) => {
+                this.Show();
+                this.WindowState = FormWindowState.Normal;
+                this.Activate();
+            };
         }
     }
 }
