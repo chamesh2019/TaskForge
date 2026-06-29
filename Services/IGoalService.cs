@@ -8,6 +8,6 @@ namespace TaskForge.Services
     {
         Task<List<DailyGoal>> GetGoalsAsync();
         Task SaveGoalAsync(string categoryName, int targetMinutes);
-        Task CheckGoalsAsync();
+        Task CheckGoalsAsync(TrackedSession? activeSession = null);
     }
 }

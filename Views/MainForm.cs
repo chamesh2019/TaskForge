@@ -24,8 +24,7 @@ namespace TaskForge.Views
         private readonly IAppCategoryService _appCategoryService;
         private readonly IDatabaseBackupService _dbBackupService;
 
-        private NotifyIcon? _notifyIcon;
-        private bool _allowClose = false;
+        private NotifyIcon? _notificationIcon;
 
         public MainForm(
             IDatabaseInitializer dbInitializer,
@@ -77,7 +76,12 @@ namespace TaskForge.Views
 
             timerRefresh.Start();
 
-            InitializeSystemTray();
+            _notificationIcon = new NotifyIcon
+            {
+                Icon = this.Icon ?? SystemIcons.Application,
+                Text = "TaskForge Tracker",
+                Visible = true
+            };
         }
 
         private void NotificationService_NotificationTriggered(object? sender, string message)
@@ -85,19 +89,19 @@ namespace TaskForge.Views
             // Goals checks run in a background thread, so marshal back to UI thread
             if (InvokeRequired)
             {
-                BeginInvoke(new Action(() => ShowNotification(message)));
+                BeginInvoke(new Action(() => ShowSystemNotification(message)));
             }
             else
             {
-                ShowNotification(message);
+                ShowSystemNotification(message);
             }
         }
 
-        private void ShowNotification(string message)
+        private void ShowSystemNotification(string message)
         {
-            if (_notifyIcon != null)
+            if (_notificationIcon != null)
             {
-                _notifyIcon.ShowBalloonTip(5000, "Daily Goal Achieved", message, ToolTipIcon.Info);
+                _notificationIcon.ShowBalloonTip(5000, "Daily Goal Achieved", message, ToolTipIcon.Info);
             }
             else
             {
@@ -154,9 +158,11 @@ namespace TaskForge.Views
             lblTotalTime.Text = $"Total Time: {Math.Round(total, 2)} mins";
         }
 
-        private void timerRefresh_Tick(object sender, EventArgs e)
+        private async void timerRefresh_Tick(object sender, EventArgs e)
         {
             LoadChartData();
+            var currentSession = _trackingService.GetCurrentSession();
+            await _goalService.CheckGoalsAsync(currentSession);
         }
 
         private void Tracker_ActiveWindowChanged(object? sender, TrackedSession e)
@@ -248,10 +254,10 @@ namespace TaskForge.Views
 
             _trackingService.StopTracking();
 
-            if (_notifyIcon != null)
+            if (_notificationIcon != null)
             {
-                _notifyIcon.Visible = false;
-                _notifyIcon.Dispose();
+                _notificationIcon.Visible = false;
+                _notificationIcon.Dispose();
             }
 
             base.OnFormClosing(e);

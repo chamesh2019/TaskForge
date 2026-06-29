@@ -62,7 +62,7 @@ namespace TaskForge.Services
             await CheckGoalsAsync();
         }
 
-        public async Task CheckGoalsAsync()
+        public async Task CheckGoalsAsync(TrackedSession? activeSession = null)
         {
             // Reset the notified set if the day has changed
             if (DateTime.Today != _lastNotificationDate)
@@ -84,6 +84,20 @@ namespace TaskForge.Services
                     g => g.Key,
                     g => g.Sum(s => s.Duration.TotalMinutes)
                 );
+
+            if (activeSession != null && activeSession.CategoryId.HasValue)
+            {
+                int catId = activeSession.CategoryId.Value;
+                double activeMinutes = activeSession.Duration.TotalMinutes;
+                if (categoryMinutes.ContainsKey(catId))
+                {
+                    categoryMinutes[catId] += activeMinutes;
+                }
+                else
+                {
+                    categoryMinutes[catId] = activeMinutes;
+                }
+            }
 
             foreach (var goal in goals)
             {
