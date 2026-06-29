@@ -223,6 +223,35 @@ namespace TaskForge.Views
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            if (!_allowClose && e.CloseReason == CloseReason.UserClosing)
+            {
+                var result = MessageBox.Show(this, 
+                    "Do you want to minimize TaskForge to the system tray to keep tracking active in the background?\n\nChoose 'Yes' to hide to tray, 'No' to close/exit the application completely, or 'Cancel' to keep the window open.", 
+                    "Exit TaskForge", 
+                    MessageBoxButtons.YesNoCancel, 
+                    MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    e.Cancel = true;
+                    this.Hide();
+                    if (_notifyIcon != null)
+                    {
+                        _notifyIcon.ShowBalloonTip(3000, "TaskForge", "Application minimized to system tray. Tracking is active in the background.", ToolTipIcon.Info);
+                    }
+                    return;
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                else // DialogResult.No
+                {
+                    _allowClose = true;
+                }
+            }
+
             _trackingService.StopTracking();
 
             if (_notificationIcon != null)
@@ -515,6 +544,46 @@ namespace TaskForge.Views
 
             form.ShowDialog(this);
 
+        }
+
+        private void InitializeSystemTray()
+        {
+            _notifyIcon = new NotifyIcon
+            {
+                Icon = this.Icon ?? SystemIcons.Application,
+                Text = "TaskForge Tracker",
+                Visible = true
+            };
+
+            var contextMenu = new ContextMenuStrip();
+            
+            var showItem = new ToolStripMenuItem("Show Dashboard", null, (s, e) => {
+                this.Show();
+                this.WindowState = FormWindowState.Normal;
+                this.Activate();
+            });
+
+            var hideItem = new ToolStripMenuItem("Hide to Tray", null, (s, e) => {
+                this.Hide();
+            });
+
+            var exitItem = new ToolStripMenuItem("Exit Application", null, (s, e) => {
+                _allowClose = true;
+                Application.Exit();
+            });
+
+            contextMenu.Items.Add(showItem);
+            contextMenu.Items.Add(hideItem);
+            contextMenu.Items.Add(new ToolStripSeparator());
+            contextMenu.Items.Add(exitItem);
+
+            _notifyIcon.ContextMenuStrip = contextMenu;
+
+            _notifyIcon.DoubleClick += (s, e) => {
+                this.Show();
+                this.WindowState = FormWindowState.Normal;
+                this.Activate();
+            };
         }
     }
 }
