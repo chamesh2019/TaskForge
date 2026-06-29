@@ -158,9 +158,11 @@ namespace TaskForge.Views
             lblTotalTime.Text = $"Total Time: {Math.Round(total, 2)} mins";
         }
 
-        private void timerRefresh_Tick(object sender, EventArgs e)
+        private async void timerRefresh_Tick(object sender, EventArgs e)
         {
             LoadChartData();
+            var currentSession = _trackingService.GetCurrentSession();
+            await _goalService.CheckGoalsAsync(currentSession);
         }
 
         private void Tracker_ActiveWindowChanged(object? sender, TrackedSession e)

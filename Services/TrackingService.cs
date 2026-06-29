@@ -77,7 +77,18 @@ namespace TaskForge.Services
 
         private void Tracker_ActiveWindowChanged(object? sender, TrackedSession e)
         {
-            ActiveWindowChanged?.Invoke(this, e);
+            Task.Run(async () =>
+            {
+                try
+                {
+                    e.CategoryId = await _classificationService.ClassifySessionAsync(e);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to classify active session: {ex.Message}");
+                }
+                ActiveWindowChanged?.Invoke(this, e);
+            });
         }
 
         private void Tracker_SessionEnded(object? sender, TrackedSession e)
