@@ -24,6 +24,8 @@ namespace TaskForge.Views
         private readonly IAppCategoryService _appCategoryService;
         private readonly IDatabaseBackupService _dbBackupService;
 
+        private NotifyIcon? _notificationIcon;
+
         public MainForm(
             IDatabaseInitializer dbInitializer,
             ICategoryService categoryService,
@@ -74,9 +76,12 @@ namespace TaskForge.Views
 
             timerRefresh.Start();
 
-
-            //OpenReportsForm();
-
+            _notificationIcon = new NotifyIcon
+            {
+                Icon = this.Icon ?? SystemIcons.Application,
+                Text = "TaskForge Tracker",
+                Visible = true
+            };
         }
 
         private void NotificationService_NotificationTriggered(object? sender, string message)
@@ -84,9 +89,19 @@ namespace TaskForge.Views
             // Goals checks run in a background thread, so marshal back to UI thread
             if (InvokeRequired)
             {
-                BeginInvoke(new Action(() =>
-                    MessageBox.Show(this, message, "Daily Goal Achieved", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                ));
+                BeginInvoke(new Action(() => ShowSystemNotification(message)));
+            }
+            else
+            {
+                ShowSystemNotification(message);
+            }
+        }
+
+        private void ShowSystemNotification(string message)
+        {
+            if (_notificationIcon != null)
+            {
+                _notificationIcon.ShowBalloonTip(5000, "Daily Goal Achieved", message, ToolTipIcon.Info);
             }
             else
             {
@@ -207,6 +222,13 @@ namespace TaskForge.Views
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             _trackingService.StopTracking();
+
+            if (_notificationIcon != null)
+            {
+                _notificationIcon.Visible = false;
+                _notificationIcon.Dispose();
+            }
+
             base.OnFormClosing(e);
         }
 
