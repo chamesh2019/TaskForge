@@ -219,13 +219,31 @@ namespace TaskForge.Views
         {
             if (!_allowClose && e.CloseReason == CloseReason.UserClosing)
             {
-                e.Cancel = true;
-                this.Hide();
-                if (_notifyIcon != null)
+                var result = MessageBox.Show(this, 
+                    "Do you want to minimize TaskForge to the system tray to keep tracking active in the background?\n\nChoose 'Yes' to hide to tray, 'No' to close/exit the application completely, or 'Cancel' to keep the window open.", 
+                    "Exit TaskForge", 
+                    MessageBoxButtons.YesNoCancel, 
+                    MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
                 {
-                    _notifyIcon.ShowBalloonTip(3000, "TaskForge", "Application minimized to system tray. Tracking is active in the background.", ToolTipIcon.Info);
+                    e.Cancel = true;
+                    this.Hide();
+                    if (_notifyIcon != null)
+                    {
+                        _notifyIcon.ShowBalloonTip(3000, "TaskForge", "Application minimized to system tray. Tracking is active in the background.", ToolTipIcon.Info);
+                    }
+                    return;
                 }
-                return;
+                else if (result == DialogResult.Cancel)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                else // DialogResult.No
+                {
+                    _allowClose = true;
+                }
             }
 
             _trackingService.StopTracking();
