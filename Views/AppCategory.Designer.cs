@@ -48,7 +48,7 @@ namespace TaskForge.Views
             // 
             // saveButton
             // 
-            saveButton.Location = new Point(531, 9);
+            saveButton.Location = new Point(12, 7);
             saveButton.Name = "saveButton";
             saveButton.Size = new Size(94, 29);
             saveButton.TabIndex = 0;
@@ -69,14 +69,19 @@ namespace TaskForge.Views
             // 
             appCategoryData.AllowUserToAddRows = false;
             appCategoryData.AllowUserToDeleteRows = false;
+            appCategoryData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            appCategoryData.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            appCategoryData.BackgroundColor = Color.White;
             appCategoryData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            appCategoryData.Location = new Point(3, 3);
+            appCategoryData.Dock = DockStyle.Fill;
+            appCategoryData.GridColor = Color.Black;
+            appCategoryData.Location = new Point(0, 0);
             appCategoryData.Name = "appCategoryData";
             appCategoryData.RowHeadersWidth = 51;
-            appCategoryData.Size = new Size(797, 402);
+            appCategoryData.Size = new Size(800, 408);
             appCategoryData.TabIndex = 0;
             // 
-            // AppCatergory
+            // AppCategory
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
