@@ -99,5 +99,10 @@ namespace TaskForge.Views
                 MessageBox.Show(this, $"Failed to save mappings: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void backButton_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }

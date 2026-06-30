@@ -159,6 +159,7 @@ namespace TaskForge.Views
             // 
             // btnExport
             // 
+            btnExport.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnExport.Location = new Point(380, 51);
             btnExport.Name = "btnExport";
             btnExport.Size = new Size(120, 29);
@@ -168,6 +169,7 @@ namespace TaskForge.Views
             // 
             // btnImport
             // 
+            btnImport.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnImport.Location = new Point(510, 51);
             btnImport.Name = "btnImport";
             btnImport.Size = new Size(120, 29);
@@ -177,6 +179,7 @@ namespace TaskForge.Views
             // 
             // btnCheckGoals
             // 
+            btnCheckGoals.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnCheckGoals.AutoSize = true;
             btnCheckGoals.Location = new Point(649, 51);
             btnCheckGoals.Name = "btnCheckGoals";
@@ -201,6 +204,7 @@ namespace TaskForge.Views
             // 
             // button1
             // 
+            button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             button1.Location = new Point(798, 51);
             button1.Name = "button1";
             button1.Size = new Size(177, 29);
