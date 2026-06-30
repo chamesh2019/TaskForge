@@ -65,7 +65,8 @@ namespace TaskForge
                 notificationService,
                 productivityService,
                 appCategoryService,
-                dbBackupService
+                dbBackupService,
+                reportService
             ));
         }
     }

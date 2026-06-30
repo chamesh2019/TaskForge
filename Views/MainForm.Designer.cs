@@ -79,6 +79,14 @@ namespace TaskForge.Views
             btnSaveGoal = new Button();
             numGoalMinutes = new NumericUpDown();
             cmbGoalCategory = new ComboBox();
+            panelReports = new Panel();
+            dataGridReports = new DataGridView();
+            panelReportsToolbar = new Panel();
+            btnLoadApplications = new Button();
+            btnLoadCategories = new Button();
+            btnCharts = new Button();
+            btnExportPdf = new Button();
+            btnExportExcel = new Button();
             menuStrip1 = new MenuStrip();
             dashboardToolStripMenuItem = new ToolStripMenuItem();
             historyToolStripMenuItem = new ToolStripMenuItem();
@@ -100,6 +108,9 @@ namespace TaskForge.Views
             tabPage2.SuspendLayout();
             tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numGoalMinutes).BeginInit();
+            panelReports.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridReports).BeginInit();
+            panelReportsToolbar.SuspendLayout();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)bindingSource1).BeginInit();
             SuspendLayout();
@@ -356,7 +367,7 @@ namespace TaskForge.Views
             tabPage1.ForeColor = Color.Black;
             tabPage1.Location = new Point(4, 32);
             tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(3, 3, 3, 3);
+            tabPage1.Padding = new Padding(3);
             tabPage1.Size = new Size(992, 385);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Categories";
@@ -436,7 +447,7 @@ namespace TaskForge.Views
             tabPage2.Controls.Add(txtIgnoreApp);
             tabPage2.Location = new Point(4, 32);
             tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3, 3, 3, 3);
+            tabPage2.Padding = new Padding(3);
             tabPage2.Size = new Size(992, 385);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Ignore List";
@@ -518,7 +529,7 @@ namespace TaskForge.Views
             tabPage3.Controls.Add(cmbGoalCategory);
             tabPage3.Location = new Point(4, 32);
             tabPage3.Name = "tabPage3";
-            tabPage3.Padding = new Padding(3, 3, 3, 3);
+            tabPage3.Padding = new Padding(3);
             tabPage3.Size = new Size(992, 385);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Daily Goals";
@@ -603,6 +614,101 @@ namespace TaskForge.Views
             cmbGoalCategory.Size = new Size(151, 28);
             cmbGoalCategory.TabIndex = 0;
             // 
+            // panelReports
+            // 
+            panelReports.Controls.Add(dataGridReports);
+            panelReports.Controls.Add(panelReportsToolbar);
+            panelReports.Dock = DockStyle.Fill;
+            panelReports.Location = new Point(0, 0);
+            panelReports.Name = "panelReports";
+            panelReports.Size = new Size(1000, 450);
+            panelReports.TabIndex = 3;
+            panelReports.Visible = false;
+            // 
+            // dataGridReports
+            // 
+            dataGridReports.AllowUserToAddRows = false;
+            dataGridReports.AllowUserToDeleteRows = false;
+            dataGridReports.AllowUserToResizeColumns = false;
+            dataGridReports.AllowUserToResizeRows = false;
+            dataGridReports.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridReports.BackgroundColor = Color.White;
+            dataGridReports.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridReports.Dock = DockStyle.Fill;
+            dataGridReports.Location = new Point(0, 98);
+            dataGridReports.Name = "dataGridReports";
+            dataGridReports.RowHeadersWidth = 72;
+            dataGridReports.Size = new Size(1000, 352);
+            dataGridReports.TabIndex = 1;
+            // 
+            // panelReportsToolbar
+            // 
+            panelReportsToolbar.BackColor = Color.White;
+            panelReportsToolbar.Controls.Add(btnLoadApplications);
+            panelReportsToolbar.Controls.Add(btnLoadCategories);
+            panelReportsToolbar.Controls.Add(btnCharts);
+            panelReportsToolbar.Controls.Add(btnExportPdf);
+            panelReportsToolbar.Controls.Add(btnExportExcel);
+            panelReportsToolbar.Dock = DockStyle.Top;
+            panelReportsToolbar.Location = new Point(0, 0);
+            panelReportsToolbar.Name = "panelReportsToolbar";
+            panelReportsToolbar.Size = new Size(1000, 98);
+            panelReportsToolbar.TabIndex = 0;
+            // 
+            // btnLoadApplications
+            // 
+            btnLoadApplications.Location = new Point(23, 43);
+            btnLoadApplications.Name = "btnLoadApplications";
+            btnLoadApplications.Size = new Size(160, 35);
+            btnLoadApplications.TabIndex = 0;
+            btnLoadApplications.Text = "Application Report";
+            toolTip1.SetToolTip(btnLoadApplications, "Select to generate an application report.");
+            btnLoadApplications.UseVisualStyleBackColor = true;
+            btnLoadApplications.Click += btnLoadApplications_Click;
+            // 
+            // btnLoadCategories
+            // 
+            btnLoadCategories.Location = new Point(200, 43);
+            btnLoadCategories.Name = "btnLoadCategories";
+            btnLoadCategories.Size = new Size(160, 35);
+            btnLoadCategories.TabIndex = 1;
+            btnLoadCategories.Text = "Category Report";
+            toolTip1.SetToolTip(btnLoadCategories, "Select to generate a category report.");
+            btnLoadCategories.UseVisualStyleBackColor = true;
+            btnLoadCategories.Click += btnLoadCategories_Click;
+            // 
+            // btnCharts
+            // 
+            btnCharts.Location = new Point(888, 43);
+            btnCharts.Name = "btnCharts";
+            btnCharts.Size = new Size(100, 35);
+            btnCharts.TabIndex = 2;
+            btnCharts.Text = "Charts";
+            btnCharts.UseVisualStyleBackColor = true;
+            btnCharts.Click += btnCharts_Click;
+            // 
+            // btnExportPdf
+            // 
+            btnExportPdf.Location = new Point(382, 43);
+            btnExportPdf.Name = "btnExportPdf";
+            btnExportPdf.Size = new Size(120, 35);
+            btnExportPdf.TabIndex = 3;
+            btnExportPdf.Text = "Export PDF";
+            toolTip1.SetToolTip(btnExportPdf, "Select a report, then export it as a PDF.");
+            btnExportPdf.UseVisualStyleBackColor = true;
+            btnExportPdf.Click += btnExportPdf_Click;
+            // 
+            // btnExportExcel
+            // 
+            btnExportExcel.Location = new Point(519, 43);
+            btnExportExcel.Name = "btnExportExcel";
+            btnExportExcel.Size = new Size(120, 35);
+            btnExportExcel.TabIndex = 4;
+            btnExportExcel.Text = "Export Excel";
+            toolTip1.SetToolTip(btnExportExcel, "Select a report, then export it as an Excel file.");
+            btnExportExcel.UseVisualStyleBackColor = true;
+            btnExportExcel.Click += btnExportExcel_Click;
+            // 
             // menuStrip1
             // 
             menuStrip1.BackColor = Color.Transparent;
@@ -672,6 +778,7 @@ namespace TaskForge.Views
             Controls.Add(panelDashboard);
             Controls.Add(panelHistory);
             Controls.Add(panelSettings);
+            Controls.Add(panelReports);
             MainMenuStrip = menuStrip1;
             Name = "MainForm";
             Text = "TaskForge";
@@ -692,6 +799,9 @@ namespace TaskForge.Views
             tabPage3.ResumeLayout(false);
             tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numGoalMinutes).EndInit();
+            panelReports.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dataGridReports).EndInit();
+            panelReportsToolbar.ResumeLayout(false);
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)bindingSource1).EndInit();
@@ -704,6 +814,14 @@ namespace TaskForge.Views
         private Panel panelDashboard;
         private Panel panelHistory;
         private Panel panelSettings;
+        private Panel panelReports;
+        private Panel panelReportsToolbar;
+        private DataGridView dataGridReports;
+        private Button btnLoadApplications;
+        private Button btnLoadCategories;
+        private Button btnCharts;
+        private Button btnExportPdf;
+        private Button btnExportExcel;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem dashboardToolStripMenuItem;
         private ToolStripMenuItem historyToolStripMenuItem;
