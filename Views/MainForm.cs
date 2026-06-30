@@ -25,6 +25,7 @@ namespace TaskForge.Views
         private readonly IDatabaseBackupService _dbBackupService;
 
         private NotifyIcon? _notificationIcon;
+        private bool _allowClose;
 
         public MainForm(
             IDatabaseInitializer dbInitializer,
@@ -76,12 +77,7 @@ namespace TaskForge.Views
 
             timerRefresh.Start();
 
-            _notificationIcon = new NotifyIcon
-            {
-                Icon = this.Icon ?? SystemIcons.Application,
-                Text = "TaskForge Tracker",
-                Visible = true
-            };
+            InitializeSystemTray();
         }
 
         private void NotificationService_NotificationTriggered(object? sender, string message)
@@ -235,9 +231,9 @@ namespace TaskForge.Views
                 {
                     e.Cancel = true;
                     this.Hide();
-                    if (_notifyIcon != null)
+                    if (_notificationIcon != null)
                     {
-                        _notifyIcon.ShowBalloonTip(3000, "TaskForge", "Application minimized to system tray. Tracking is active in the background.", ToolTipIcon.Info);
+                        _notificationIcon.ShowBalloonTip(3000, "TaskForge", "Application minimized to system tray. Tracking is active in the background.", ToolTipIcon.Info);
                     }
                     return;
                 }
@@ -548,7 +544,7 @@ namespace TaskForge.Views
 
         private void InitializeSystemTray()
         {
-            _notifyIcon = new NotifyIcon
+            _notificationIcon = new NotifyIcon
             {
                 Icon = this.Icon ?? SystemIcons.Application,
                 Text = "TaskForge Tracker",
@@ -577,9 +573,9 @@ namespace TaskForge.Views
             contextMenu.Items.Add(new ToolStripSeparator());
             contextMenu.Items.Add(exitItem);
 
-            _notifyIcon.ContextMenuStrip = contextMenu;
+            _notificationIcon.ContextMenuStrip = contextMenu;
 
-            _notifyIcon.DoubleClick += (s, e) => {
+            _notificationIcon.DoubleClick += (s, e) => {
                 this.Show();
                 this.WindowState = FormWindowState.Normal;
                 this.Activate();
