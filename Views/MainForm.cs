@@ -12,6 +12,14 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using ClosedXML.Excel;
+using System.Drawing;
+using System.Data;
+using System.IO;
+using Color = System.Drawing.Color;
+using Size = System.Drawing.Size;
+using Point = System.Drawing.Point;
+using Font = System.Drawing.Font;
+
 
 
 namespace TaskForge.Views
@@ -87,6 +95,7 @@ namespace TaskForge.Views
             timerRefresh.Start();
 
             InitializeSystemTray();
+            InitializeSettingsUI();
         }
 
         private void NotificationService_NotificationTriggered(object? sender, string message)
@@ -692,6 +701,236 @@ namespace TaskForge.Views
                 this.WindowState = FormWindowState.Normal;
                 this.Activate();
             };
+        }
+
+        private void InitializeSettingsUI()
+        {
+            // --- Tab Page 1: Categories ---
+            tabPage1.Controls.Clear();
+
+            var tbl1 = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 2,
+                RowCount = 1,
+                Padding = new Padding(10)
+            };
+            tbl1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tbl1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+
+            var grpAddCategory = new GroupBox
+            {
+                Text = "Add New Category",
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Padding = new Padding(15)
+            };
+            
+            var lblCategoryName = new Label
+            {
+                Text = "Enter Category Name:",
+                Location = new Point(15, 35),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Regular)
+            };
+            txtCategory.Location = new Point(15, 65);
+            txtCategory.Size = new Size(grpAddCategory.Width - 30, 27);
+            txtCategory.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            btnAddCategory.Text = "Add Category";
+            btnAddCategory.Location = new Point(15, 110);
+            btnAddCategory.Size = new Size(grpAddCategory.Width - 30, 35);
+            btnAddCategory.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnAddCategory.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            btnAddCategory.FlatStyle = FlatStyle.Flat;
+            btnAddCategory.BackColor = Color.FromArgb(0, 122, 204);
+            btnAddCategory.ForeColor = Color.White;
+            btnAddCategory.FlatAppearance.BorderSize = 0;
+
+            grpAddCategory.Controls.Add(lblCategoryName);
+            grpAddCategory.Controls.Add(txtCategory);
+            grpAddCategory.Controls.Add(btnAddCategory);
+
+            var grpExistingCategories = new GroupBox
+            {
+                Text = "Existing Categories",
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Padding = new Padding(15)
+            };
+
+            lstCategories.Location = new Point(15, 35);
+            lstCategories.Size = new Size(grpExistingCategories.Width - 30, 220);
+            lstCategories.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+            btnDeleteCategory.Text = "Delete Selected";
+            btnDeleteCategory.Location = new Point(15, 280);
+            btnDeleteCategory.Size = new Size(grpExistingCategories.Width - 30, 35);
+            btnDeleteCategory.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            btnDeleteCategory.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            btnDeleteCategory.FlatStyle = FlatStyle.Flat;
+            btnDeleteCategory.BackColor = Color.FromArgb(220, 53, 69);
+            btnDeleteCategory.ForeColor = Color.White;
+            btnDeleteCategory.FlatAppearance.BorderSize = 0;
+
+            grpExistingCategories.Controls.Add(lstCategories);
+            grpExistingCategories.Controls.Add(btnDeleteCategory);
+
+            tbl1.Controls.Add(grpAddCategory, 0, 0);
+            tbl1.Controls.Add(grpExistingCategories, 1, 0);
+            tabPage1.Controls.Add(tbl1);
+
+            // --- Tab Page 2: Ignore List ---
+            tabPage2.Controls.Clear();
+
+            var tbl2 = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 2,
+                RowCount = 1,
+                Padding = new Padding(10)
+            };
+            tbl2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tbl2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+
+            var grpAddIgnore = new GroupBox
+            {
+                Text = "Ignore Application",
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Padding = new Padding(15)
+            };
+
+            var lblIgnoreName = new Label
+            {
+                Text = "Enter Application Name to Ignore:",
+                Location = new Point(15, 35),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Regular)
+            };
+            txtIgnoreApp.Location = new Point(15, 65);
+            txtIgnoreApp.Size = new Size(grpAddIgnore.Width - 30, 27);
+            txtIgnoreApp.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            btnAddIgnore.Text = "Add to Ignore List";
+            btnAddIgnore.Location = new Point(15, 110);
+            btnAddIgnore.Size = new Size(grpAddIgnore.Width - 30, 35);
+            btnAddIgnore.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnAddIgnore.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            btnAddIgnore.FlatStyle = FlatStyle.Flat;
+            btnAddIgnore.BackColor = Color.FromArgb(0, 122, 204);
+            btnAddIgnore.ForeColor = Color.White;
+            btnAddIgnore.FlatAppearance.BorderSize = 0;
+
+            grpAddIgnore.Controls.Add(lblIgnoreName);
+            grpAddIgnore.Controls.Add(txtIgnoreApp);
+            grpAddIgnore.Controls.Add(btnAddIgnore);
+
+            var grpIgnoredApps = new GroupBox
+            {
+                Text = "Ignored Applications",
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Padding = new Padding(15)
+            };
+
+            lstIgnoredApps.Location = new Point(15, 35);
+            lstIgnoredApps.Size = new Size(grpIgnoredApps.Width - 30, 220);
+            lstIgnoredApps.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+            btnDeleteIgnore.Text = "Remove Selected";
+            btnDeleteIgnore.Location = new Point(15, 280);
+            btnDeleteIgnore.Size = new Size(grpIgnoredApps.Width - 30, 35);
+            btnDeleteIgnore.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            btnDeleteIgnore.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            btnDeleteIgnore.FlatStyle = FlatStyle.Flat;
+            btnDeleteIgnore.BackColor = Color.FromArgb(220, 53, 69);
+            btnDeleteIgnore.ForeColor = Color.White;
+            btnDeleteIgnore.FlatAppearance.BorderSize = 0;
+
+            grpIgnoredApps.Controls.Add(lstIgnoredApps);
+            grpIgnoredApps.Controls.Add(btnDeleteIgnore);
+
+            tbl2.Controls.Add(grpAddIgnore, 0, 0);
+            tbl2.Controls.Add(grpIgnoredApps, 1, 0);
+            tabPage2.Controls.Add(tbl2);
+
+            // --- Tab Page 3: Daily Goals ---
+            tabPage3.Controls.Clear();
+
+            var tbl3 = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 2,
+                RowCount = 1,
+                Padding = new Padding(10)
+            };
+            tbl3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tbl3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+
+            var grpSetGoal = new GroupBox
+            {
+                Text = "Set Daily Goal",
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Padding = new Padding(15)
+            };
+
+            var lblGoalCategory = new Label
+            {
+                Text = "Select Category:",
+                Location = new Point(15, 35),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Regular)
+            };
+            cmbGoalCategory.Location = new Point(15, 65);
+            cmbGoalCategory.Size = new Size(grpSetGoal.Width - 30, 28);
+            cmbGoalCategory.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            var lblGoalMinutes = new Label
+            {
+                Text = "Target Duration (Minutes):",
+                Location = new Point(15, 110),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Regular)
+            };
+            numGoalMinutes.Location = new Point(15, 140);
+            numGoalMinutes.Size = new Size(grpSetGoal.Width - 30, 27);
+            numGoalMinutes.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            btnSaveGoal.Text = "Save Daily Goal";
+            btnSaveGoal.Location = new Point(15, 190);
+            btnSaveGoal.Size = new Size(grpSetGoal.Width - 30, 35);
+            btnSaveGoal.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnSaveGoal.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            btnSaveGoal.FlatStyle = FlatStyle.Flat;
+            btnSaveGoal.BackColor = Color.FromArgb(0, 122, 204);
+            btnSaveGoal.ForeColor = Color.White;
+            btnSaveGoal.FlatAppearance.BorderSize = 0;
+
+            grpSetGoal.Controls.Add(lblGoalCategory);
+            grpSetGoal.Controls.Add(cmbGoalCategory);
+            grpSetGoal.Controls.Add(lblGoalMinutes);
+            grpSetGoal.Controls.Add(numGoalMinutes);
+            grpSetGoal.Controls.Add(btnSaveGoal);
+
+            var grpSavedGoals = new GroupBox
+            {
+                Text = "Saved Daily Goals",
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Padding = new Padding(15)
+            };
+
+            lstGoals.Location = new Point(15, 35);
+            lstGoals.Size = new Size(grpSavedGoals.Width - 30, 280);
+            lstGoals.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+            grpSavedGoals.Controls.Add(lstGoals);
+
+            tbl3.Controls.Add(grpSetGoal, 0, 0);
+            tbl3.Controls.Add(grpSavedGoals, 1, 0);
+            tabPage3.Controls.Add(tbl3);
         }
     }
 }
