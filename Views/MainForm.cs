@@ -8,6 +8,18 @@ using TaskForge.Data;
 using TaskForge.Data.Repositories;
 using TaskForge.Services;
 using TaskForge.Tracking;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using ClosedXML.Excel;
+using System.Drawing;
+using System.Data;
+using System.IO;
+using Color = System.Drawing.Color;
+using Size = System.Drawing.Size;
+using Point = System.Drawing.Point;
+using Font = System.Drawing.Font;
+
 
 
 namespace TaskForge.Views
@@ -23,8 +35,10 @@ namespace TaskForge.Views
         private readonly IProductivityService _productivityService;
         private readonly IAppCategoryService _appCategoryService;
         private readonly IDatabaseBackupService _dbBackupService;
+        private readonly IReportService _reportService;
 
         private NotifyIcon? _notificationIcon;
+        private bool _allowClose;
 
         public MainForm(
             IDatabaseInitializer dbInitializer,
@@ -35,9 +49,12 @@ namespace TaskForge.Views
             INotificationService notificationService,
             IProductivityService productivityService,
             IAppCategoryService appCategoryService,
-            IDatabaseBackupService dbBackupService)
+            IDatabaseBackupService dbBackupService,
+            IReportService reportService)
         {
             InitializeComponent();
+
+            QuestPDF.Settings.License = LicenseType.Community;
 
             _dbInitializer = dbInitializer;
             _categoryService = categoryService;
@@ -48,6 +65,7 @@ namespace TaskForge.Views
             _productivityService = productivityService;
             _appCategoryService = appCategoryService;
             _dbBackupService = dbBackupService;
+            _reportService = reportService;
 
             // Initialize database schema
             _dbInitializer.Initialize();
@@ -76,12 +94,8 @@ namespace TaskForge.Views
 
             timerRefresh.Start();
 
-            _notificationIcon = new NotifyIcon
-            {
-                Icon = this.Icon ?? SystemIcons.Application,
-                Text = "TaskForge Tracker",
-                Visible = true
-            };
+            InitializeSystemTray();
+            InitializeSettingsUI();
         }
 
         private void NotificationService_NotificationTriggered(object? sender, string message)
@@ -114,6 +128,7 @@ namespace TaskForge.Views
             panelDashboard.Visible = true;
             panelHistory.Visible = false;
             panelSettings.Visible = false;
+            panelReports.Visible = false;
         }
 
         private async void historyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -121,6 +136,7 @@ namespace TaskForge.Views
             panelDashboard.Visible = false;
             panelHistory.Visible = true;
             panelSettings.Visible = false;
+            panelReports.Visible = false;
 
             await LoadHistoryDataAsync(cmbApplication.Text, dtFrom.Value, dtTo.Value);
         }
@@ -130,6 +146,7 @@ namespace TaskForge.Views
             panelDashboard.Visible = false;
             panelHistory.Visible = false;
             panelSettings.Visible = true;
+            panelReports.Visible = false;
 
             await LoadCategoriesAsync();
             await LoadIgnoredAppsAsync();
@@ -235,9 +252,9 @@ namespace TaskForge.Views
                 {
                     e.Cancel = true;
                     this.Hide();
-                    if (_notifyIcon != null)
+                    if (_notificationIcon != null)
                     {
-                        _notifyIcon.ShowBalloonTip(3000, "TaskForge", "Application minimized to system tray. Tracking is active in the background.", ToolTipIcon.Info);
+                        _notificationIcon.ShowBalloonTip(3000, "TaskForge", "Application minimized to system tray. Tracking is active in the background.", ToolTipIcon.Info);
                     }
                     return;
                 }
@@ -450,16 +467,6 @@ namespace TaskForge.Views
             form.ShowDialog(this);
         }
 
-        private void OpenReportsForm()
-        {
-            var reportService = new ReportService(
-                new TrackedSessionRepository());
-
-            using var form = new ReportsForm(reportService);
-
-            form.ShowDialog(this);
-        }
-
         private async void btnExport_Click(object? sender, EventArgs e)
         {
             using var saveFileDialog = new SaveFileDialog
@@ -535,20 +542,130 @@ namespace TaskForge.Views
         }
 
         private void reportsToolStripMenuItem_Click(object sender, EventArgs e)
-
         {
+            panelDashboard.Visible = false;
+            panelHistory.Visible = false;
+            panelSettings.Visible = false;
+            panelReports.Visible = true;
+        }
 
-            var reportService = new ReportService(new TrackedSessionRepository());
+        private async void btnLoadApplications_Click(object? sender, EventArgs e)
+        {
+            var report = await _reportService.GetApplicationSummaryAsync();
+            dataGridReports.DataSource = report;
+        }
 
-            using var form = new ReportsForm(reportService);
+        private async void btnLoadCategories_Click(object? sender, EventArgs e)
+        {
+            var report = await _reportService.GetCategorySummaryAsync();
+            dataGridReports.DataSource = report;
+        }
 
+        private void btnCharts_Click(object? sender, EventArgs e)
+        {
+            using var form = new ChartReportForm(_reportService);
             form.ShowDialog(this);
+        }
 
+        private void btnExportPdf_Click(object? sender, EventArgs e)
+        {
+            using SaveFileDialog saveFile = new SaveFileDialog();
+
+            saveFile.Filter = "PDF Files (*.pdf)|*.pdf";
+            saveFile.FileName = "TaskForgeReport.pdf";
+
+            if (saveFile.ShowDialog() != DialogResult.OK)
+                return;
+
+            Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(30);
+
+                    page.Header()
+                        .Text("TaskForge Report")
+                        .FontSize(20)
+                        .Bold();
+
+                    page.Content().Column(column =>
+                    {
+                        column.Spacing(5);
+
+                        foreach (DataGridViewRow row in dataGridReports.Rows)
+                        {
+                            if (row.IsNewRow)
+                                continue;
+
+                            string line = "";
+
+                            foreach (DataGridViewCell cell in row.Cells)
+                            {
+                                line += $"{cell.Value}    ";
+                            }
+
+                            column.Item().Text(line);
+                        }
+                    });
+
+                    page.Footer()
+                        .AlignCenter()
+                        .Text($"Generated: {DateTime.Now}");
+                });
+            })
+            .GeneratePdf(saveFile.FileName);
+
+            MessageBox.Show("PDF exported successfully!");
+        }
+
+        private void btnExportExcel_Click(object? sender, EventArgs e)
+        {
+            using SaveFileDialog saveFile = new SaveFileDialog();
+
+            saveFile.Filter = "Excel Workbook (*.xlsx)|*.xlsx";
+            saveFile.FileName = "TaskForgeReport.xlsx";
+
+            if (saveFile.ShowDialog() != DialogResult.OK)
+                return;
+
+            using var workbook = new XLWorkbook();
+
+            var worksheet = workbook.Worksheets.Add("Report");
+
+            // Column headers
+            for (int i = 0; i < dataGridReports.Columns.Count; i++)
+            {
+                worksheet.Cell(1, i + 1).Value = dataGridReports.Columns[i].HeaderText;
+                worksheet.Cell(1, i + 1).Style.Font.Bold = true;
+            }
+
+            // Data
+            int row = 2;
+
+            foreach (DataGridViewRow dgvRow in dataGridReports.Rows)
+            {
+                if (dgvRow.IsNewRow)
+                    continue;
+
+                for (int col = 0; col < dgvRow.Cells.Count; col++)
+                {
+                    worksheet.Cell(row, col + 1).Value =
+                        dgvRow.Cells[col].Value?.ToString() ?? "";
+                }
+
+                row++;
+            }
+
+            worksheet.Columns().AdjustToContents();
+
+            workbook.SaveAs(saveFile.FileName);
+
+            MessageBox.Show("Excel exported successfully!");
         }
 
         private void InitializeSystemTray()
         {
-            _notifyIcon = new NotifyIcon
+            _notificationIcon = new NotifyIcon
             {
                 Icon = this.Icon ?? SystemIcons.Application,
                 Text = "TaskForge Tracker",
@@ -577,13 +694,243 @@ namespace TaskForge.Views
             contextMenu.Items.Add(new ToolStripSeparator());
             contextMenu.Items.Add(exitItem);
 
-            _notifyIcon.ContextMenuStrip = contextMenu;
+            _notificationIcon.ContextMenuStrip = contextMenu;
 
-            _notifyIcon.DoubleClick += (s, e) => {
+            _notificationIcon.DoubleClick += (s, e) => {
                 this.Show();
                 this.WindowState = FormWindowState.Normal;
                 this.Activate();
             };
+        }
+
+        private void InitializeSettingsUI()
+        {
+            // --- Tab Page 1: Categories ---
+            tabPage1.Controls.Clear();
+
+            var tbl1 = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 2,
+                RowCount = 1,
+                Padding = new Padding(10)
+            };
+            tbl1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tbl1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+
+            var grpAddCategory = new GroupBox
+            {
+                Text = "Add New Category",
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Padding = new Padding(15)
+            };
+            
+            var lblCategoryName = new Label
+            {
+                Text = "Enter Category Name:",
+                Location = new Point(15, 35),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Regular)
+            };
+            txtCategory.Location = new Point(15, 65);
+            txtCategory.Size = new Size(grpAddCategory.Width - 30, 27);
+            txtCategory.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            btnAddCategory.Text = "Add Category";
+            btnAddCategory.Location = new Point(15, 110);
+            btnAddCategory.Size = new Size(grpAddCategory.Width - 30, 35);
+            btnAddCategory.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnAddCategory.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            btnAddCategory.FlatStyle = FlatStyle.Flat;
+            btnAddCategory.BackColor = Color.FromArgb(0, 122, 204);
+            btnAddCategory.ForeColor = Color.White;
+            btnAddCategory.FlatAppearance.BorderSize = 0;
+
+            grpAddCategory.Controls.Add(lblCategoryName);
+            grpAddCategory.Controls.Add(txtCategory);
+            grpAddCategory.Controls.Add(btnAddCategory);
+
+            var grpExistingCategories = new GroupBox
+            {
+                Text = "Existing Categories",
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Padding = new Padding(15)
+            };
+
+            lstCategories.Location = new Point(15, 35);
+            lstCategories.Size = new Size(grpExistingCategories.Width - 30, 220);
+            lstCategories.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+            btnDeleteCategory.Text = "Delete Selected";
+            btnDeleteCategory.Location = new Point(15, 280);
+            btnDeleteCategory.Size = new Size(grpExistingCategories.Width - 30, 35);
+            btnDeleteCategory.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            btnDeleteCategory.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            btnDeleteCategory.FlatStyle = FlatStyle.Flat;
+            btnDeleteCategory.BackColor = Color.FromArgb(220, 53, 69);
+            btnDeleteCategory.ForeColor = Color.White;
+            btnDeleteCategory.FlatAppearance.BorderSize = 0;
+
+            grpExistingCategories.Controls.Add(lstCategories);
+            grpExistingCategories.Controls.Add(btnDeleteCategory);
+
+            tbl1.Controls.Add(grpAddCategory, 0, 0);
+            tbl1.Controls.Add(grpExistingCategories, 1, 0);
+            tabPage1.Controls.Add(tbl1);
+
+            // --- Tab Page 2: Ignore List ---
+            tabPage2.Controls.Clear();
+
+            var tbl2 = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 2,
+                RowCount = 1,
+                Padding = new Padding(10)
+            };
+            tbl2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tbl2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+
+            var grpAddIgnore = new GroupBox
+            {
+                Text = "Ignore Application",
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Padding = new Padding(15)
+            };
+
+            var lblIgnoreName = new Label
+            {
+                Text = "Enter Application Name to Ignore:",
+                Location = new Point(15, 35),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Regular)
+            };
+            txtIgnoreApp.Location = new Point(15, 65);
+            txtIgnoreApp.Size = new Size(grpAddIgnore.Width - 30, 27);
+            txtIgnoreApp.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            btnAddIgnore.Text = "Add to Ignore List";
+            btnAddIgnore.Location = new Point(15, 110);
+            btnAddIgnore.Size = new Size(grpAddIgnore.Width - 30, 35);
+            btnAddIgnore.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnAddIgnore.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            btnAddIgnore.FlatStyle = FlatStyle.Flat;
+            btnAddIgnore.BackColor = Color.FromArgb(0, 122, 204);
+            btnAddIgnore.ForeColor = Color.White;
+            btnAddIgnore.FlatAppearance.BorderSize = 0;
+
+            grpAddIgnore.Controls.Add(lblIgnoreName);
+            grpAddIgnore.Controls.Add(txtIgnoreApp);
+            grpAddIgnore.Controls.Add(btnAddIgnore);
+
+            var grpIgnoredApps = new GroupBox
+            {
+                Text = "Ignored Applications",
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Padding = new Padding(15)
+            };
+
+            lstIgnoredApps.Location = new Point(15, 35);
+            lstIgnoredApps.Size = new Size(grpIgnoredApps.Width - 30, 220);
+            lstIgnoredApps.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+            btnDeleteIgnore.Text = "Remove Selected";
+            btnDeleteIgnore.Location = new Point(15, 280);
+            btnDeleteIgnore.Size = new Size(grpIgnoredApps.Width - 30, 35);
+            btnDeleteIgnore.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            btnDeleteIgnore.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            btnDeleteIgnore.FlatStyle = FlatStyle.Flat;
+            btnDeleteIgnore.BackColor = Color.FromArgb(220, 53, 69);
+            btnDeleteIgnore.ForeColor = Color.White;
+            btnDeleteIgnore.FlatAppearance.BorderSize = 0;
+
+            grpIgnoredApps.Controls.Add(lstIgnoredApps);
+            grpIgnoredApps.Controls.Add(btnDeleteIgnore);
+
+            tbl2.Controls.Add(grpAddIgnore, 0, 0);
+            tbl2.Controls.Add(grpIgnoredApps, 1, 0);
+            tabPage2.Controls.Add(tbl2);
+
+            // --- Tab Page 3: Daily Goals ---
+            tabPage3.Controls.Clear();
+
+            var tbl3 = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 2,
+                RowCount = 1,
+                Padding = new Padding(10)
+            };
+            tbl3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tbl3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+
+            var grpSetGoal = new GroupBox
+            {
+                Text = "Set Daily Goal",
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Padding = new Padding(15)
+            };
+
+            var lblGoalCategory = new Label
+            {
+                Text = "Select Category:",
+                Location = new Point(15, 35),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Regular)
+            };
+            cmbGoalCategory.Location = new Point(15, 65);
+            cmbGoalCategory.Size = new Size(grpSetGoal.Width - 30, 28);
+            cmbGoalCategory.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            var lblGoalMinutes = new Label
+            {
+                Text = "Target Duration (Minutes):",
+                Location = new Point(15, 110),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Regular)
+            };
+            numGoalMinutes.Location = new Point(15, 140);
+            numGoalMinutes.Size = new Size(grpSetGoal.Width - 30, 27);
+            numGoalMinutes.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            btnSaveGoal.Text = "Save Daily Goal";
+            btnSaveGoal.Location = new Point(15, 190);
+            btnSaveGoal.Size = new Size(grpSetGoal.Width - 30, 35);
+            btnSaveGoal.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnSaveGoal.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            btnSaveGoal.FlatStyle = FlatStyle.Flat;
+            btnSaveGoal.BackColor = Color.FromArgb(0, 122, 204);
+            btnSaveGoal.ForeColor = Color.White;
+            btnSaveGoal.FlatAppearance.BorderSize = 0;
+
+            grpSetGoal.Controls.Add(lblGoalCategory);
+            grpSetGoal.Controls.Add(cmbGoalCategory);
+            grpSetGoal.Controls.Add(lblGoalMinutes);
+            grpSetGoal.Controls.Add(numGoalMinutes);
+            grpSetGoal.Controls.Add(btnSaveGoal);
+
+            var grpSavedGoals = new GroupBox
+            {
+                Text = "Saved Daily Goals",
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Padding = new Padding(15)
+            };
+
+            lstGoals.Location = new Point(15, 35);
+            lstGoals.Size = new Size(grpSavedGoals.Width - 30, 280);
+            lstGoals.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+            grpSavedGoals.Controls.Add(lstGoals);
+
+            tbl3.Controls.Add(grpSetGoal, 0, 0);
+            tbl3.Controls.Add(grpSavedGoals, 1, 0);
+            tabPage3.Controls.Add(tbl3);
         }
     }
 }

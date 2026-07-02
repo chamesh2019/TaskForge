@@ -30,6 +30,7 @@ namespace TaskForge.Views
         {
             panel1 = new Panel();
             saveButton = new Button();
+            backButton = new Button();
             panel2 = new Panel();
             appCategoryData = new DataGridView();
             panel1.SuspendLayout();
@@ -40,6 +41,7 @@ namespace TaskForge.Views
             // panel1
             // 
             panel1.Controls.Add(saveButton);
+            panel1.Controls.Add(backButton);
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
@@ -48,13 +50,24 @@ namespace TaskForge.Views
             // 
             // saveButton
             // 
-            saveButton.Location = new Point(531, 9);
+            saveButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            saveButton.Location = new Point(694, 7);
             saveButton.Name = "saveButton";
             saveButton.Size = new Size(94, 29);
             saveButton.TabIndex = 0;
             saveButton.Text = "Save All";
             saveButton.UseVisualStyleBackColor = true;
             saveButton.Click += saveButton_Click;
+            // 
+            // backButton
+            // 
+            backButton.Location = new Point(12, 7);
+            backButton.Name = "backButton";
+            backButton.Size = new Size(94, 29);
+            backButton.TabIndex = 1;
+            backButton.Text = "Back";
+            backButton.UseVisualStyleBackColor = true;
+            backButton.Click += backButton_Click;
             // 
             // panel2
             // 
@@ -69,14 +82,19 @@ namespace TaskForge.Views
             // 
             appCategoryData.AllowUserToAddRows = false;
             appCategoryData.AllowUserToDeleteRows = false;
+            appCategoryData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            appCategoryData.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            appCategoryData.BackgroundColor = Color.White;
             appCategoryData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            appCategoryData.Location = new Point(3, 3);
+            appCategoryData.Dock = DockStyle.Fill;
+            appCategoryData.GridColor = Color.Black;
+            appCategoryData.Location = new Point(0, 0);
             appCategoryData.Name = "appCategoryData";
             appCategoryData.RowHeadersWidth = 51;
-            appCategoryData.Size = new Size(797, 402);
+            appCategoryData.Size = new Size(800, 408);
             appCategoryData.TabIndex = 0;
             // 
-            // AppCatergory
+            // AppCategory
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -97,5 +115,6 @@ namespace TaskForge.Views
         private Panel panel2;
         private DataGridView appCategoryData;
         private Button saveButton;
+        private Button backButton;
     }
 }
