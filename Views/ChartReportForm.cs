@@ -1,6 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using TaskForge.Services;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace TaskForge.Views
 {
@@ -12,6 +16,7 @@ namespace TaskForge.Views
         {
             InitializeComponent();
             _reportService = reportService;
+            cmbChartType.SelectedIndex = 0;
         }
 
         private async Task LoadDailyChartAsync()
@@ -29,11 +34,6 @@ namespace TaskForge.Views
             }
         }
 
-        private async void btnDailyChart_Click(object sender, EventArgs e)
-        {
-            await LoadDailyChartAsync();
-        }
-
         private async Task LoadWeeklyChartAsync()
         {
             var report = await _reportService.GetWeeklySummaryAsync();
@@ -49,14 +49,68 @@ namespace TaskForge.Views
             }
         }
 
-        private async void btnWeeklyChart_Click(object sender, EventArgs e)
+        private async void cmbChartType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            await LoadWeeklyChartAsync();
+            if (cmbChartType.SelectedIndex == 1)
+            {
+                await LoadDailyChartAsync();
+                btnExportPdf.Enabled = true;
+            }
+            else if (cmbChartType.SelectedIndex == 2)
+            {
+                await LoadWeeklyChartAsync();
+                btnExportPdf.Enabled = true;
+            }
+            else
+            {
+                chartReport.Series.Clear();
+                btnExportPdf.Enabled = false;
+            }
         }
 
-        private void btnWeeklyChart_Click_1(object sender, EventArgs e)
+        private void btnExportPdf_Click(object sender, EventArgs e)
         {
+            using SaveFileDialog saveFile = new SaveFileDialog();
 
+            saveFile.Filter = "PDF Files (*.pdf)|*.pdf";
+            saveFile.FileName = "ChartReport.pdf";
+
+            if (saveFile.ShowDialog() != DialogResult.OK)
+                return;
+
+            string tempImageFile = Path.Combine(Path.GetTempPath(), "chart_export.png");
+            chartReport.SaveImage(tempImageFile, System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
+
+            Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(30);
+
+                    page.Header()
+                        .Text($"TaskForge Chart Report - {cmbChartType.Text}")
+                        .FontSize(20)
+                        .Bold();
+
+                    page.Content().Column(column =>
+                    {
+                        column.Spacing(10);
+                        column.Item().Image(tempImageFile);
+                    });
+
+                    page.Footer()
+                        .AlignCenter()
+                        .Text($"Generated: {DateTime.Now}");
+                });
+            })
+            .GeneratePdf(saveFile.FileName);
+
+            if (File.Exists(tempImageFile))
+            {
+                File.Delete(tempImageFile);
+            }
+
+            MessageBox.Show("Chart PDF exported successfully!");
         }
     }
 }

@@ -82,11 +82,10 @@ namespace TaskForge.Views
             panelReports = new Panel();
             dataGridReports = new DataGridView();
             panelReportsToolbar = new Panel();
-            btnLoadApplications = new Button();
-            btnLoadCategories = new Button();
+            cmbReportType = new ComboBox();
+            cmbExportFormat = new ComboBox();
+            btnExportReport = new Button();
             btnCharts = new Button();
-            btnExportPdf = new Button();
-            btnExportExcel = new Button();
             menuStrip1 = new MenuStrip();
             dashboardToolStripMenuItem = new ToolStripMenuItem();
             historyToolStripMenuItem = new ToolStripMenuItem();
@@ -121,8 +120,9 @@ namespace TaskForge.Views
             panelDashboard.Controls.Add(panel1);
             panelDashboard.Dock = DockStyle.Fill;
             panelDashboard.Location = new Point(0, 0);
+            panelDashboard.Margin = new Padding(3, 2, 3, 2);
             panelDashboard.Name = "panelDashboard";
-            panelDashboard.Size = new Size(1000, 450);
+            panelDashboard.Size = new Size(875, 563);
             panelDashboard.TabIndex = 0;
             // 
             // chartDashboard
@@ -132,14 +132,15 @@ namespace TaskForge.Views
             chartDashboard.Dock = DockStyle.Fill;
             legend2.Name = "Legend1";
             chartDashboard.Legends.Add(legend2);
-            chartDashboard.Location = new Point(0, 98);
+            chartDashboard.Location = new Point(0, 74);
+            chartDashboard.Margin = new Padding(3, 2, 3, 2);
             chartDashboard.Name = "chartDashboard";
             series2.ChartArea = "ChartArea1";
             series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
             series2.Legend = "Legend1";
             series2.Name = "Series1";
             chartDashboard.Series.Add(series2);
-            chartDashboard.Size = new Size(1000, 352);
+            chartDashboard.Size = new Size(875, 489);
             chartDashboard.TabIndex = 0;
             chartDashboard.Text = "chart1";
             // 
@@ -153,16 +154,18 @@ namespace TaskForge.Views
             panel1.Controls.Add(button1);
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
+            panel1.Margin = new Padding(3, 2, 3, 2);
             panel1.Name = "panel1";
-            panel1.Size = new Size(1000, 98);
+            panel1.Size = new Size(875, 74);
             panel1.TabIndex = 4;
             // 
             // btnExport
             // 
             btnExport.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnExport.Location = new Point(380, 51);
+            btnExport.Location = new Point(332, 38);
+            btnExport.Margin = new Padding(3, 2, 3, 2);
             btnExport.Name = "btnExport";
-            btnExport.Size = new Size(120, 29);
+            btnExport.Size = new Size(105, 22);
             btnExport.TabIndex = 4;
             btnExport.Text = "Export Database";
             btnExport.UseVisualStyleBackColor = true;
@@ -170,9 +173,10 @@ namespace TaskForge.Views
             // btnImport
             // 
             btnImport.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnImport.Location = new Point(510, 51);
+            btnImport.Location = new Point(446, 38);
+            btnImport.Margin = new Padding(3, 2, 3, 2);
             btnImport.Name = "btnImport";
-            btnImport.Size = new Size(120, 29);
+            btnImport.Size = new Size(105, 22);
             btnImport.TabIndex = 5;
             btnImport.Text = "Import Database";
             btnImport.UseVisualStyleBackColor = true;
@@ -181,9 +185,10 @@ namespace TaskForge.Views
             // 
             btnCheckGoals.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnCheckGoals.AutoSize = true;
-            btnCheckGoals.Location = new Point(649, 51);
+            btnCheckGoals.Location = new Point(568, 38);
+            btnCheckGoals.Margin = new Padding(3, 2, 3, 2);
             btnCheckGoals.Name = "btnCheckGoals";
-            btnCheckGoals.Size = new Size(136, 30);
+            btnCheckGoals.Size = new Size(119, 25);
             btnCheckGoals.TabIndex = 2;
             btnCheckGoals.Text = "Check Goals";
             toolTip1.SetToolTip(btnCheckGoals, "Check whether daily goals are exceeded or not.");
@@ -196,18 +201,19 @@ namespace TaskForge.Views
             lblTotalTime.BackColor = Color.White;
             lblTotalTime.Font = new Font("Yu Gothic UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblTotalTime.ForeColor = Color.Crimson;
-            lblTotalTime.Location = new Point(25, 53);
+            lblTotalTime.Location = new Point(22, 40);
             lblTotalTime.Name = "lblTotalTime";
-            lblTotalTime.Size = new Size(190, 23);
+            lblTotalTime.Size = new Size(159, 19);
             lblTotalTime.TabIndex = 1;
             lblTotalTime.Text = "Total Time Today: 0 min";
             // 
             // button1
             // 
             button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            button1.Location = new Point(798, 51);
+            button1.Location = new Point(698, 38);
+            button1.Margin = new Padding(3, 2, 3, 2);
             button1.Name = "button1";
-            button1.Size = new Size(177, 29);
+            button1.Size = new Size(155, 22);
             button1.TabIndex = 3;
             button1.Text = "Edit App Category";
             button1.UseVisualStyleBackColor = true;
@@ -219,8 +225,9 @@ namespace TaskForge.Views
             panelHistory.Controls.Add(panelFilters);
             panelHistory.Dock = DockStyle.Fill;
             panelHistory.Location = new Point(0, 0);
+            panelHistory.Margin = new Padding(3, 2, 3, 2);
             panelHistory.Name = "panelHistory";
-            panelHistory.Size = new Size(1000, 450);
+            panelHistory.Size = new Size(875, 563);
             panelHistory.TabIndex = 1;
             panelHistory.Visible = false;
             // 
@@ -234,12 +241,13 @@ namespace TaskForge.Views
             dataGridHistory.BackgroundColor = Color.White;
             dataGridHistory.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridHistory.Dock = DockStyle.Fill;
-            dataGridHistory.Location = new Point(0, 98);
+            dataGridHistory.Location = new Point(0, 74);
+            dataGridHistory.Margin = new Padding(3, 2, 3, 2);
             dataGridHistory.Name = "dataGridHistory";
             dataGridHistory.ReadOnly = true;
             dataGridHistory.RowHeadersWidth = 51;
             dataGridHistory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridHistory.Size = new Size(1000, 352);
+            dataGridHistory.Size = new Size(875, 489);
             dataGridHistory.TabIndex = 0;
             // 
             // panelFilters
@@ -255,8 +263,9 @@ namespace TaskForge.Views
             panelFilters.Controls.Add(lblApplication);
             panelFilters.Dock = DockStyle.Top;
             panelFilters.Location = new Point(0, 0);
+            panelFilters.Margin = new Padding(3, 2, 3, 2);
             panelFilters.Name = "panelFilters";
-            panelFilters.Size = new Size(1000, 98);
+            panelFilters.Size = new Size(875, 74);
             panelFilters.TabIndex = 0;
             // 
             // cmbCategory
@@ -264,54 +273,57 @@ namespace TaskForge.Views
             cmbCategory.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbCategory.FormattingEnabled = true;
             cmbCategory.Items.AddRange(new object[] { "All", "Work", "Entertainment", "Other" });
-            cmbCategory.Location = new Point(798, 47);
+            cmbCategory.Location = new Point(698, 35);
+            cmbCategory.Margin = new Padding(3, 2, 3, 2);
             cmbCategory.Name = "cmbCategory";
-            cmbCategory.Size = new Size(151, 28);
+            cmbCategory.Size = new Size(133, 23);
             cmbCategory.TabIndex = 8;
             cmbCategory.SelectedIndexChanged += cmbCategory_SelectedIndexChanged;
             // 
             // lblCategory
             // 
             lblCategory.AutoSize = true;
-            lblCategory.Location = new Point(720, 50);
+            lblCategory.Location = new Point(630, 38);
             lblCategory.Name = "lblCategory";
-            lblCategory.Size = new Size(72, 20);
+            lblCategory.Size = new Size(58, 15);
             lblCategory.TabIndex = 7;
             lblCategory.Text = "Category:";
             // 
             // dtTo
             // 
             dtTo.Format = DateTimePickerFormat.Short;
-            dtTo.Location = new Point(553, 48);
+            dtTo.Location = new Point(484, 36);
+            dtTo.Margin = new Padding(3, 2, 3, 2);
             dtTo.Name = "dtTo";
-            dtTo.Size = new Size(100, 27);
+            dtTo.Size = new Size(88, 23);
             dtTo.TabIndex = 6;
             dtTo.ValueChanged += dtTo_ValueChanged;
             // 
             // dtFrom
             // 
             dtFrom.Format = DateTimePickerFormat.Short;
-            dtFrom.Location = new Point(384, 48);
+            dtFrom.Location = new Point(336, 36);
+            dtFrom.Margin = new Padding(3, 2, 3, 2);
             dtFrom.Name = "dtFrom";
-            dtFrom.Size = new Size(100, 27);
+            dtFrom.Size = new Size(88, 23);
             dtFrom.TabIndex = 5;
             dtFrom.ValueChanged += dtFrom_ValueChanged;
             // 
             // lblTo
             // 
             lblTo.AutoSize = true;
-            lblTo.Location = new Point(519, 50);
+            lblTo.Location = new Point(454, 38);
             lblTo.Name = "lblTo";
-            lblTo.Size = new Size(28, 20);
+            lblTo.Size = new Size(23, 15);
             lblTo.TabIndex = 4;
             lblTo.Text = "To:";
             // 
             // lblFrom
             // 
             lblFrom.AutoSize = true;
-            lblFrom.Location = new Point(332, 50);
+            lblFrom.Location = new Point(290, 38);
             lblFrom.Name = "lblFrom";
-            lblFrom.Size = new Size(46, 20);
+            lblFrom.Size = new Size(38, 15);
             lblFrom.TabIndex = 3;
             lblFrom.Text = "From:";
             // 
@@ -319,18 +331,19 @@ namespace TaskForge.Views
             // 
             cmbApplication.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbApplication.FormattingEnabled = true;
-            cmbApplication.Location = new Point(117, 47);
+            cmbApplication.Location = new Point(102, 35);
+            cmbApplication.Margin = new Padding(3, 2, 3, 2);
             cmbApplication.Name = "cmbApplication";
-            cmbApplication.Size = new Size(180, 28);
+            cmbApplication.Size = new Size(158, 23);
             cmbApplication.TabIndex = 1;
             cmbApplication.SelectedIndexChanged += cmbApplication_SelectedIndexChanged;
             // 
             // lblApplication
             // 
             lblApplication.AutoSize = true;
-            lblApplication.Location = new Point(22, 50);
+            lblApplication.Location = new Point(19, 38);
             lblApplication.Name = "lblApplication";
-            lblApplication.Size = new Size(89, 20);
+            lblApplication.Size = new Size(71, 15);
             lblApplication.TabIndex = 0;
             lblApplication.Text = "Application:";
             // 
@@ -340,8 +353,9 @@ namespace TaskForge.Views
             panelSettings.Controls.Add(tabSettings);
             panelSettings.Dock = DockStyle.Fill;
             panelSettings.Location = new Point(0, 0);
+            panelSettings.Margin = new Padding(3, 2, 3, 2);
             panelSettings.Name = "panelSettings";
-            panelSettings.Size = new Size(1000, 450);
+            panelSettings.Size = new Size(875, 563);
             panelSettings.TabIndex = 2;
             panelSettings.Visible = false;
             // 
@@ -352,10 +366,11 @@ namespace TaskForge.Views
             tabSettings.Controls.Add(tabPage1);
             tabSettings.Controls.Add(tabPage2);
             tabSettings.Controls.Add(tabPage3);
-            tabSettings.Location = new Point(0, 29);
+            tabSettings.Location = new Point(0, 22);
+            tabSettings.Margin = new Padding(3, 2, 3, 2);
             tabSettings.Name = "tabSettings";
             tabSettings.SelectedIndex = 0;
-            tabSettings.Size = new Size(1000, 421);
+            tabSettings.Size = new Size(875, 541);
             tabSettings.TabIndex = 3;
             // 
             // tabPage1
@@ -369,10 +384,11 @@ namespace TaskForge.Views
             tabPage1.Controls.Add(txtCategory);
             tabPage1.Controls.Add(lstCategories);
             tabPage1.ForeColor = Color.Black;
-            tabPage1.Location = new Point(4, 32);
+            tabPage1.Location = new Point(4, 27);
+            tabPage1.Margin = new Padding(3, 2, 3, 2);
             tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(992, 385);
+            tabPage1.Padding = new Padding(3, 2, 3, 2);
+            tabPage1.Size = new Size(867, 510);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Categories";
             // 
@@ -380,9 +396,9 @@ namespace TaskForge.Views
             // 
             lblExistingCategories.AutoSize = true;
             lblExistingCategories.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblExistingCategories.Location = new Point(21, 186);
+            lblExistingCategories.Location = new Point(18, 140);
             lblExistingCategories.Name = "lblExistingCategories";
-            lblExistingCategories.Size = new Size(142, 20);
+            lblExistingCategories.Size = new Size(112, 15);
             lblExistingCategories.TabIndex = 6;
             lblExistingCategories.Text = "Existing Categories";
             // 
@@ -390,9 +406,9 @@ namespace TaskForge.Views
             // 
             lblAddCategory.AutoSize = true;
             lblAddCategory.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblAddCategory.Location = new Point(21, 79);
+            lblAddCategory.Location = new Point(18, 59);
             lblAddCategory.Name = "lblAddCategory";
-            lblAddCategory.Size = new Size(142, 20);
+            lblAddCategory.Size = new Size(111, 15);
             lblAddCategory.TabIndex = 5;
             lblAddCategory.Text = "Add New Category";
             // 
@@ -400,43 +416,47 @@ namespace TaskForge.Views
             // 
             lblCategoryTitle.AutoSize = true;
             lblCategoryTitle.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblCategoryTitle.Location = new Point(21, 15);
+            lblCategoryTitle.Location = new Point(18, 11);
             lblCategoryTitle.Name = "lblCategoryTitle";
-            lblCategoryTitle.Size = new Size(208, 25);
+            lblCategoryTitle.Size = new Size(170, 20);
             lblCategoryTitle.TabIndex = 4;
             lblCategoryTitle.Text = "Category Management";
             // 
             // btnDeleteCategory
             // 
-            btnDeleteCategory.Location = new Point(21, 351);
+            btnDeleteCategory.Location = new Point(18, 263);
+            btnDeleteCategory.Margin = new Padding(3, 2, 3, 2);
             btnDeleteCategory.Name = "btnDeleteCategory";
-            btnDeleteCategory.Size = new Size(436, 29);
+            btnDeleteCategory.Size = new Size(382, 22);
             btnDeleteCategory.TabIndex = 3;
             btnDeleteCategory.Text = "Delete Selected";
             btnDeleteCategory.UseVisualStyleBackColor = true;
             // 
             // btnAddCategory
             // 
-            btnAddCategory.Location = new Point(21, 120);
+            btnAddCategory.Location = new Point(18, 90);
+            btnAddCategory.Margin = new Padding(3, 2, 3, 2);
             btnAddCategory.Name = "btnAddCategory";
-            btnAddCategory.Size = new Size(436, 29);
+            btnAddCategory.Size = new Size(382, 22);
             btnAddCategory.TabIndex = 2;
             btnAddCategory.Text = "Add";
             btnAddCategory.UseVisualStyleBackColor = true;
             // 
             // txtCategory
             // 
-            txtCategory.Location = new Point(182, 76);
+            txtCategory.Location = new Point(159, 57);
+            txtCategory.Margin = new Padding(3, 2, 3, 2);
             txtCategory.Name = "txtCategory";
-            txtCategory.Size = new Size(275, 27);
+            txtCategory.Size = new Size(241, 23);
             txtCategory.TabIndex = 1;
             // 
             // lstCategories
             // 
             lstCategories.FormattingEnabled = true;
-            lstCategories.Location = new Point(182, 186);
+            lstCategories.Location = new Point(159, 140);
+            lstCategories.Margin = new Padding(3, 2, 3, 2);
             lstCategories.Name = "lstCategories";
-            lstCategories.Size = new Size(275, 144);
+            lstCategories.Size = new Size(241, 109);
             lstCategories.TabIndex = 0;
             // 
             // tabPage2
@@ -449,10 +469,11 @@ namespace TaskForge.Views
             tabPage2.Controls.Add(btnDeleteIgnore);
             tabPage2.Controls.Add(btnAddIgnore);
             tabPage2.Controls.Add(txtIgnoreApp);
-            tabPage2.Location = new Point(4, 32);
+            tabPage2.Location = new Point(4, 27);
+            tabPage2.Margin = new Padding(3, 2, 3, 2);
             tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(992, 385);
+            tabPage2.Padding = new Padding(3, 2, 3, 2);
+            tabPage2.Size = new Size(867, 510);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Ignore List";
             // 
@@ -460,9 +481,9 @@ namespace TaskForge.Views
             // 
             lblIgnoredList.AutoSize = true;
             lblIgnoredList.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblIgnoredList.Location = new Point(25, 184);
+            lblIgnoredList.Location = new Point(22, 138);
             lblIgnoredList.Name = "lblIgnoredList";
-            lblIgnoredList.Size = new Size(155, 20);
+            lblIgnoredList.Size = new Size(121, 15);
             lblIgnoredList.TabIndex = 7;
             lblIgnoredList.Text = "Ignored Applications";
             // 
@@ -470,9 +491,9 @@ namespace TaskForge.Views
             // 
             lblAddIgnore.AutoSize = true;
             lblAddIgnore.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblAddIgnore.Location = new Point(25, 77);
+            lblAddIgnore.Location = new Point(22, 58);
             lblAddIgnore.Name = "lblAddIgnore";
-            lblAddIgnore.Size = new Size(191, 20);
+            lblAddIgnore.Size = new Size(149, 15);
             lblAddIgnore.TabIndex = 5;
             lblAddIgnore.Text = "Add Application to Ignore";
             // 
@@ -480,43 +501,47 @@ namespace TaskForge.Views
             // 
             lblIgnoreTitle.AutoSize = true;
             lblIgnoreTitle.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblIgnoreTitle.Location = new Point(25, 16);
+            lblIgnoreTitle.Location = new Point(22, 12);
             lblIgnoreTitle.Name = "lblIgnoreTitle";
-            lblIgnoreTitle.Size = new Size(179, 25);
+            lblIgnoreTitle.Size = new Size(146, 20);
             lblIgnoreTitle.TabIndex = 4;
             lblIgnoreTitle.Text = "Ignore Applications";
             // 
             // lstIgnoredApps
             // 
             lstIgnoredApps.FormattingEnabled = true;
-            lstIgnoredApps.Location = new Point(210, 184);
+            lstIgnoredApps.Location = new Point(184, 138);
+            lstIgnoredApps.Margin = new Padding(3, 2, 3, 2);
             lstIgnoredApps.Name = "lstIgnoredApps";
-            lstIgnoredApps.Size = new Size(353, 144);
+            lstIgnoredApps.Size = new Size(309, 109);
             lstIgnoredApps.TabIndex = 3;
             // 
             // btnDeleteIgnore
             // 
-            btnDeleteIgnore.Location = new Point(25, 341);
+            btnDeleteIgnore.Location = new Point(22, 256);
+            btnDeleteIgnore.Margin = new Padding(3, 2, 3, 2);
             btnDeleteIgnore.Name = "btnDeleteIgnore";
-            btnDeleteIgnore.Size = new Size(538, 29);
+            btnDeleteIgnore.Size = new Size(471, 22);
             btnDeleteIgnore.TabIndex = 2;
             btnDeleteIgnore.Text = "Delete Selected";
             btnDeleteIgnore.UseVisualStyleBackColor = true;
             // 
             // btnAddIgnore
             // 
-            btnAddIgnore.Location = new Point(25, 121);
+            btnAddIgnore.Location = new Point(22, 91);
+            btnAddIgnore.Margin = new Padding(3, 2, 3, 2);
             btnAddIgnore.Name = "btnAddIgnore";
-            btnAddIgnore.Size = new Size(538, 29);
+            btnAddIgnore.Size = new Size(471, 22);
             btnAddIgnore.TabIndex = 1;
             btnAddIgnore.Text = "Add";
             btnAddIgnore.UseVisualStyleBackColor = true;
             // 
             // txtIgnoreApp
             // 
-            txtIgnoreApp.Location = new Point(255, 74);
+            txtIgnoreApp.Location = new Point(223, 56);
+            txtIgnoreApp.Margin = new Padding(3, 2, 3, 2);
             txtIgnoreApp.Name = "txtIgnoreApp";
-            txtIgnoreApp.Size = new Size(308, 27);
+            txtIgnoreApp.Size = new Size(270, 23);
             txtIgnoreApp.TabIndex = 0;
             // 
             // tabPage3
@@ -531,10 +556,11 @@ namespace TaskForge.Views
             tabPage3.Controls.Add(btnSaveGoal);
             tabPage3.Controls.Add(numGoalMinutes);
             tabPage3.Controls.Add(cmbGoalCategory);
-            tabPage3.Location = new Point(4, 32);
+            tabPage3.Location = new Point(4, 27);
+            tabPage3.Margin = new Padding(3, 2, 3, 2);
             tabPage3.Name = "tabPage3";
-            tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(992, 385);
+            tabPage3.Padding = new Padding(3, 2, 3, 2);
+            tabPage3.Size = new Size(867, 510);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Daily Goals";
             // 
@@ -542,27 +568,27 @@ namespace TaskForge.Views
             // 
             lblSavedGoals.AutoSize = true;
             lblSavedGoals.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblSavedGoals.Location = new Point(403, 72);
+            lblSavedGoals.Location = new Point(353, 54);
             lblSavedGoals.Name = "lblSavedGoals";
-            lblSavedGoals.Size = new Size(93, 20);
+            lblSavedGoals.Size = new Size(74, 15);
             lblSavedGoals.TabIndex = 8;
             lblSavedGoals.Text = "Saved Goals";
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(20, 181);
+            label1.Location = new Point(18, 136);
             label1.Name = "label1";
-            label1.Size = new Size(106, 20);
+            label1.Size = new Size(86, 15);
             label1.TabIndex = 7;
             label1.Text = "Target Minutes";
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(40, 114);
+            label3.Location = new Point(35, 86);
             label3.Name = "label3";
-            label3.Size = new Size(69, 20);
+            label3.Size = new Size(55, 15);
             label3.TabIndex = 6;
             label3.Text = "Category";
             // 
@@ -570,9 +596,9 @@ namespace TaskForge.Views
             // 
             lblSetGoal.AutoSize = true;
             lblSetGoal.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblSetGoal.Location = new Point(20, 63);
+            lblSetGoal.Location = new Point(18, 47);
             lblSetGoal.Name = "lblSetGoal";
-            lblSetGoal.Size = new Size(106, 20);
+            lblSetGoal.Size = new Size(84, 15);
             lblSetGoal.TabIndex = 5;
             lblSetGoal.Text = "Set Daily Goal";
             // 
@@ -580,42 +606,46 @@ namespace TaskForge.Views
             // 
             lblGoalsTitle.AutoSize = true;
             lblGoalsTitle.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblGoalsTitle.Location = new Point(40, 13);
+            lblGoalsTitle.Location = new Point(35, 10);
             lblGoalsTitle.Name = "lblGoalsTitle";
-            lblGoalsTitle.Size = new Size(107, 25);
+            lblGoalsTitle.Size = new Size(87, 20);
             lblGoalsTitle.TabIndex = 4;
             lblGoalsTitle.Text = "Daily Goals";
             // 
             // lstGoals
             // 
             lstGoals.FormattingEnabled = true;
-            lstGoals.Location = new Point(403, 113);
+            lstGoals.Location = new Point(353, 85);
+            lstGoals.Margin = new Padding(3, 2, 3, 2);
             lstGoals.Name = "lstGoals";
-            lstGoals.Size = new Size(348, 164);
+            lstGoals.Size = new Size(305, 124);
             lstGoals.TabIndex = 3;
             // 
             // btnSaveGoal
             // 
-            btnSaveGoal.Location = new Point(40, 248);
+            btnSaveGoal.Location = new Point(35, 186);
+            btnSaveGoal.Margin = new Padding(3, 2, 3, 2);
             btnSaveGoal.Name = "btnSaveGoal";
-            btnSaveGoal.Size = new Size(261, 29);
+            btnSaveGoal.Size = new Size(228, 22);
             btnSaveGoal.TabIndex = 2;
             btnSaveGoal.Text = "Save";
             btnSaveGoal.UseVisualStyleBackColor = true;
             // 
             // numGoalMinutes
             // 
-            numGoalMinutes.Location = new Point(150, 179);
+            numGoalMinutes.Location = new Point(131, 134);
+            numGoalMinutes.Margin = new Padding(3, 2, 3, 2);
             numGoalMinutes.Name = "numGoalMinutes";
-            numGoalMinutes.Size = new Size(150, 27);
+            numGoalMinutes.Size = new Size(131, 23);
             numGoalMinutes.TabIndex = 1;
             // 
             // cmbGoalCategory
             // 
             cmbGoalCategory.FormattingEnabled = true;
-            cmbGoalCategory.Location = new Point(150, 111);
+            cmbGoalCategory.Location = new Point(131, 83);
+            cmbGoalCategory.Margin = new Padding(3, 2, 3, 2);
             cmbGoalCategory.Name = "cmbGoalCategory";
-            cmbGoalCategory.Size = new Size(151, 28);
+            cmbGoalCategory.Size = new Size(133, 23);
             cmbGoalCategory.TabIndex = 0;
             // 
             // panelReports
@@ -624,8 +654,9 @@ namespace TaskForge.Views
             panelReports.Controls.Add(panelReportsToolbar);
             panelReports.Dock = DockStyle.Fill;
             panelReports.Location = new Point(0, 0);
+            panelReports.Margin = new Padding(3, 2, 3, 2);
             panelReports.Name = "panelReports";
-            panelReports.Size = new Size(1000, 450);
+            panelReports.Size = new Size(875, 563);
             panelReports.TabIndex = 3;
             panelReports.Visible = false;
             // 
@@ -639,79 +670,72 @@ namespace TaskForge.Views
             dataGridReports.BackgroundColor = Color.White;
             dataGridReports.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridReports.Dock = DockStyle.Fill;
-            dataGridReports.Location = new Point(0, 98);
+            dataGridReports.Location = new Point(0, 74);
+            dataGridReports.Margin = new Padding(3, 2, 3, 2);
             dataGridReports.Name = "dataGridReports";
             dataGridReports.RowHeadersWidth = 72;
-            dataGridReports.Size = new Size(1000, 352);
+            dataGridReports.Size = new Size(875, 489);
             dataGridReports.TabIndex = 1;
             // 
             // panelReportsToolbar
             // 
             panelReportsToolbar.BackColor = Color.White;
-            panelReportsToolbar.Controls.Add(btnLoadApplications);
-            panelReportsToolbar.Controls.Add(btnLoadCategories);
+            panelReportsToolbar.Controls.Add(cmbReportType);
+            panelReportsToolbar.Controls.Add(cmbExportFormat);
+            panelReportsToolbar.Controls.Add(btnExportReport);
             panelReportsToolbar.Controls.Add(btnCharts);
-            panelReportsToolbar.Controls.Add(btnExportPdf);
-            panelReportsToolbar.Controls.Add(btnExportExcel);
             panelReportsToolbar.Dock = DockStyle.Top;
             panelReportsToolbar.Location = new Point(0, 0);
+            panelReportsToolbar.Margin = new Padding(3, 2, 3, 2);
             panelReportsToolbar.Name = "panelReportsToolbar";
-            panelReportsToolbar.Size = new Size(1000, 98);
+            panelReportsToolbar.Size = new Size(875, 74);
             panelReportsToolbar.TabIndex = 0;
             // 
-            // btnLoadApplications
+            // cmbReportType
             // 
-            btnLoadApplications.Location = new Point(23, 43);
-            btnLoadApplications.Name = "btnLoadApplications";
-            btnLoadApplications.Size = new Size(160, 35);
-            btnLoadApplications.TabIndex = 0;
-            btnLoadApplications.Text = "Application Report";
-            toolTip1.SetToolTip(btnLoadApplications, "Select to generate an application report.");
-            btnLoadApplications.UseVisualStyleBackColor = true;
-            btnLoadApplications.Click += btnLoadApplications_Click;
+            cmbReportType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbReportType.FormattingEnabled = true;
+            cmbReportType.Items.AddRange(new object[] { "Select Report Type", "Application Report", "Category Report" });
+            cmbReportType.Location = new Point(20, 35);
+            cmbReportType.Margin = new Padding(3, 2, 3, 2);
+            cmbReportType.Name = "cmbReportType";
+            cmbReportType.Size = new Size(176, 23);
+            cmbReportType.TabIndex = 0;
+            cmbReportType.SelectedIndexChanged += cmbReportType_SelectedIndexChanged;
             // 
-            // btnLoadCategories
+            // cmbExportFormat
             // 
-            btnLoadCategories.Location = new Point(200, 43);
-            btnLoadCategories.Name = "btnLoadCategories";
-            btnLoadCategories.Size = new Size(160, 35);
-            btnLoadCategories.TabIndex = 1;
-            btnLoadCategories.Text = "Category Report";
-            toolTip1.SetToolTip(btnLoadCategories, "Select to generate a category report.");
-            btnLoadCategories.UseVisualStyleBackColor = true;
-            btnLoadCategories.Click += btnLoadCategories_Click;
+            cmbExportFormat.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbExportFormat.FormattingEnabled = true;
+            cmbExportFormat.Items.AddRange(new object[] { "PDF", "Excel" });
+            cmbExportFormat.Location = new Point(210, 35);
+            cmbExportFormat.Margin = new Padding(3, 2, 3, 2);
+            cmbExportFormat.Name = "cmbExportFormat";
+            cmbExportFormat.Size = new Size(106, 23);
+            cmbExportFormat.TabIndex = 3;
+            // 
+            // btnExportReport
+            // 
+            btnExportReport.Enabled = false;
+            btnExportReport.Location = new Point(330, 32);
+            btnExportReport.Margin = new Padding(3, 2, 3, 2);
+            btnExportReport.Name = "btnExportReport";
+            btnExportReport.Size = new Size(105, 26);
+            btnExportReport.TabIndex = 4;
+            btnExportReport.Text = "Export";
+            btnExportReport.UseVisualStyleBackColor = true;
+            btnExportReport.Click += btnExportReport_Click;
             // 
             // btnCharts
             // 
-            btnCharts.Location = new Point(888, 43);
+            btnCharts.Location = new Point(450, 32);
+            btnCharts.Margin = new Padding(3, 2, 3, 2);
             btnCharts.Name = "btnCharts";
-            btnCharts.Size = new Size(100, 35);
-            btnCharts.TabIndex = 2;
+            btnCharts.Size = new Size(100, 26);
+            btnCharts.TabIndex = 5;
             btnCharts.Text = "Charts";
             btnCharts.UseVisualStyleBackColor = true;
             btnCharts.Click += btnCharts_Click;
-            // 
-            // btnExportPdf
-            // 
-            btnExportPdf.Location = new Point(382, 43);
-            btnExportPdf.Name = "btnExportPdf";
-            btnExportPdf.Size = new Size(120, 35);
-            btnExportPdf.TabIndex = 3;
-            btnExportPdf.Text = "Export PDF";
-            toolTip1.SetToolTip(btnExportPdf, "Select a report, then export it as a PDF.");
-            btnExportPdf.UseVisualStyleBackColor = true;
-            btnExportPdf.Click += btnExportPdf_Click;
-            // 
-            // btnExportExcel
-            // 
-            btnExportExcel.Location = new Point(519, 43);
-            btnExportExcel.Name = "btnExportExcel";
-            btnExportExcel.Size = new Size(120, 35);
-            btnExportExcel.TabIndex = 4;
-            btnExportExcel.Text = "Export Excel";
-            toolTip1.SetToolTip(btnExportExcel, "Select a report, then export it as an Excel file.");
-            btnExportExcel.UseVisualStyleBackColor = true;
-            btnExportExcel.Click += btnExportExcel_Click;
             // 
             // menuStrip1
             // 
@@ -720,7 +744,8 @@ namespace TaskForge.Views
             menuStrip1.Items.AddRange(new ToolStripItem[] { dashboardToolStripMenuItem, historyToolStripMenuItem, settingsToolStripMenuItem, reportsToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(1000, 31);
+            menuStrip1.Padding = new Padding(5, 2, 0, 2);
+            menuStrip1.Size = new Size(875, 28);
             menuStrip1.TabIndex = 0;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -730,7 +755,7 @@ namespace TaskForge.Views
             dashboardToolStripMenuItem.ForeColor = Color.Black;
             dashboardToolStripMenuItem.Image = Properties.Resources.dashboard_48;
             dashboardToolStripMenuItem.Name = "dashboardToolStripMenuItem";
-            dashboardToolStripMenuItem.Size = new Size(131, 27);
+            dashboardToolStripMenuItem.Size = new Size(114, 24);
             dashboardToolStripMenuItem.Text = "Dashboard";
             dashboardToolStripMenuItem.Click += dashboardToolStripMenuItem_Click;
             // 
@@ -739,7 +764,7 @@ namespace TaskForge.Views
             historyToolStripMenuItem.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             historyToolStripMenuItem.Image = Properties.Resources.history_48;
             historyToolStripMenuItem.Name = "historyToolStripMenuItem";
-            historyToolStripMenuItem.Size = new Size(103, 27);
+            historyToolStripMenuItem.Size = new Size(91, 24);
             historyToolStripMenuItem.Text = "History";
             historyToolStripMenuItem.Click += historyToolStripMenuItem_Click;
             // 
@@ -748,7 +773,7 @@ namespace TaskForge.Views
             settingsToolStripMenuItem.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             settingsToolStripMenuItem.Image = Properties.Resources.setting_48;
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            settingsToolStripMenuItem.Size = new Size(110, 27);
+            settingsToolStripMenuItem.Size = new Size(94, 24);
             settingsToolStripMenuItem.Text = "Settings";
             settingsToolStripMenuItem.Click += settingsToolStripMenuItem_Click;
             // 
@@ -757,7 +782,7 @@ namespace TaskForge.Views
             reportsToolStripMenuItem.Font = new Font("Segoe UI", 9.857143F, FontStyle.Bold, GraphicsUnit.Point, 0);
             reportsToolStripMenuItem.Image = Properties.Resources.report_48;
             reportsToolStripMenuItem.Name = "reportsToolStripMenuItem";
-            reportsToolStripMenuItem.Size = new Size(106, 27);
+            reportsToolStripMenuItem.Size = new Size(93, 24);
             reportsToolStripMenuItem.Text = "Reports";
             reportsToolStripMenuItem.Click += reportsToolStripMenuItem_Click;
             // 
@@ -775,15 +800,16 @@ namespace TaskForge.Views
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1000, 450);
+            ClientSize = new Size(875, 563);
             Controls.Add(menuStrip1);
             Controls.Add(panelDashboard);
             Controls.Add(panelHistory);
             Controls.Add(panelSettings);
             Controls.Add(panelReports);
             MainMenuStrip = menuStrip1;
+            Margin = new Padding(3, 2, 3, 2);
             Name = "MainForm";
             Text = "TaskForge";
             panelDashboard.ResumeLayout(false);
@@ -821,11 +847,10 @@ namespace TaskForge.Views
         private Panel panelReports;
         private Panel panelReportsToolbar;
         private DataGridView dataGridReports;
-        private Button btnLoadApplications;
-        private Button btnLoadCategories;
+        private ComboBox cmbReportType;
+        private ComboBox cmbExportFormat;
+        private Button btnExportReport;
         private Button btnCharts;
-        private Button btnExportPdf;
-        private Button btnExportExcel;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem dashboardToolStripMenuItem;
         private ToolStripMenuItem historyToolStripMenuItem;
