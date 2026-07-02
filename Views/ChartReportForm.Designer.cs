@@ -1,4 +1,4 @@
-﻿namespace TaskForge.Views
+namespace TaskForge.Views
 {
     partial class ChartReportForm
     {
@@ -32,8 +32,8 @@
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             chartReport = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            btnDailyChart = new Button();
-            btnWeeklyChart = new Button();
+            cmbChartType = new ComboBox();
+            btnExportPdf = new Button();
             ((System.ComponentModel.ISupportInitialize)chartReport).BeginInit();
             SuspendLayout();
             // 
@@ -43,44 +43,50 @@
             chartReport.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             chartReport.Legends.Add(legend1);
-            chartReport.Location = new Point(12, 237);
+            chartReport.Location = new Point(3, 56);
+            chartReport.Margin = new Padding(2, 2, 2, 2);
             chartReport.Name = "chartReport";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             chartReport.Series.Add(series1);
-            chartReport.Size = new Size(1307, 525);
+            chartReport.Size = new Size(762, 320);
             chartReport.TabIndex = 0;
             chartReport.Text = "chart1";
             // 
-            // btnDailyChart
+            // cmbChartType
             // 
-            btnDailyChart.Location = new Point(226, 58);
-            btnDailyChart.Name = "btnDailyChart";
-            btnDailyChart.Size = new Size(344, 125);
-            btnDailyChart.TabIndex = 1;
-            btnDailyChart.Text = "Daily Report";
-            btnDailyChart.UseVisualStyleBackColor = true;
-            btnDailyChart.Click += btnDailyChart_Click;
+            cmbChartType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbChartType.FormattingEnabled = true;
+            cmbChartType.Items.AddRange(new object[] { "Select Chart Type", "Daily Chart", "Weekly Chart" });
+            cmbChartType.Location = new Point(81, 11);
+            cmbChartType.Margin = new Padding(2, 2, 2, 2);
+            cmbChartType.Name = "cmbChartType";
+            cmbChartType.Size = new Size(145, 23);
+            cmbChartType.TabIndex = 1;
+            cmbChartType.SelectedIndexChanged += cmbChartType_SelectedIndexChanged;
             // 
-            // btnWeeklyChart
+            // btnExportPdf
             // 
-            btnWeeklyChart.Location = new Point(743, 58);
-            btnWeeklyChart.Name = "btnWeeklyChart";
-            btnWeeklyChart.Size = new Size(344, 125);
-            btnWeeklyChart.TabIndex = 2;
-            btnWeeklyChart.Text = "Weekly Report";
-            btnWeeklyChart.UseVisualStyleBackColor = true;
-            btnWeeklyChart.Click += btnWeeklyChart_Click;
+            btnExportPdf.Enabled = false;
+            btnExportPdf.Location = new Point(249, 7);
+            btnExportPdf.Margin = new Padding(2, 2, 2, 2);
+            btnExportPdf.Name = "btnExportPdf";
+            btnExportPdf.Size = new Size(111, 30);
+            btnExportPdf.TabIndex = 2;
+            btnExportPdf.Text = "Export PDF";
+            btnExportPdf.UseVisualStyleBackColor = true;
+            btnExportPdf.Click += btnExportPdf_Click;
             // 
             // ChartReportForm
             // 
-            AutoScaleDimensions = new SizeF(12F, 30F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1331, 774);
-            Controls.Add(btnWeeklyChart);
-            Controls.Add(btnDailyChart);
+            ClientSize = new Size(776, 387);
+            Controls.Add(btnExportPdf);
+            Controls.Add(cmbChartType);
             Controls.Add(chartReport);
+            Margin = new Padding(2, 2, 2, 2);
             Name = "ChartReportForm";
             Text = "ChartReportForm";
             ((System.ComponentModel.ISupportInitialize)chartReport).EndInit();
@@ -90,7 +96,7 @@
         #endregion
 
         private System.Windows.Forms.DataVisualization.Charting.Chart chartReport;
-        private Button btnDailyChart;
-        private Button btnWeeklyChart;
+        private ComboBox cmbChartType;
+        private Button btnExportPdf;
     }
 }

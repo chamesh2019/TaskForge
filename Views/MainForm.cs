@@ -96,6 +96,13 @@ namespace TaskForge.Views
 
             InitializeSystemTray();
             InitializeSettingsUI();
+
+            // Set initial state for Report dropdowns
+            cmbReportType.SelectedIndex = 0;
+            if (cmbExportFormat.Items.Count > 0)
+            {
+                cmbExportFormat.SelectedIndex = 0;
+            }
         }
 
         private void NotificationService_NotificationTriggered(object? sender, string message)
@@ -549,22 +556,47 @@ namespace TaskForge.Views
             panelReports.Visible = true;
         }
 
-        private async void btnLoadApplications_Click(object? sender, EventArgs e)
+        private async void cmbReportType_SelectedIndexChanged(object? sender, EventArgs e)
         {
-            var report = await _reportService.GetApplicationSummaryAsync();
-            dataGridReports.DataSource = report;
-        }
-
-        private async void btnLoadCategories_Click(object? sender, EventArgs e)
-        {
-            var report = await _reportService.GetCategorySummaryAsync();
-            dataGridReports.DataSource = report;
+            if (cmbReportType.SelectedIndex == 1)
+            {
+                var report = await _reportService.GetApplicationSummaryAsync();
+                dataGridReports.DataSource = report;
+                btnExportReport.Enabled = true;
+            }
+            else if (cmbReportType.SelectedIndex == 2)
+            {
+                var report = await _reportService.GetCategorySummaryAsync();
+                dataGridReports.DataSource = report;
+                btnExportReport.Enabled = true;
+            }
+            else
+            {
+                dataGridReports.DataSource = null;
+                btnExportReport.Enabled = false;
+            }
         }
 
         private void btnCharts_Click(object? sender, EventArgs e)
         {
             using var form = new ChartReportForm(_reportService);
             form.ShowDialog(this);
+        }
+
+        private void btnExportReport_Click(object? sender, EventArgs e)
+        {
+            if (cmbExportFormat.SelectedIndex == 0) // PDF
+            {
+                btnExportPdf_Click(sender, e);
+            }
+            else if (cmbExportFormat.SelectedIndex == 1) // Excel
+            {
+                btnExportExcel_Click(sender, e);
+            }
+            else
+            {
+                MessageBox.Show("Please select an export format.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void btnExportPdf_Click(object? sender, EventArgs e)
@@ -588,23 +620,35 @@ namespace TaskForge.Views
                         .FontSize(20)
                         .Bold();
 
-                    page.Content().Column(column =>
+                    page.Content().PaddingVertical(10).Table(table =>
                     {
-                        column.Spacing(5);
+                        table.ColumnsDefinition(columns =>
+                        {
+                            for (int i = 0; i < dataGridReports.Columns.Count; i++)
+                            {
+                                columns.RelativeColumn();
+                            }
+                        });
+
+                        table.Header(header =>
+                        {
+                            for (int i = 0; i < dataGridReports.Columns.Count; i++)
+                            {
+                                header.Cell().BorderBottom(1).BorderColor(QuestPDF.Helpers.Colors.Black)
+                                    .Padding(5).Text(dataGridReports.Columns[i].HeaderText).Bold();
+                            }
+                        });
 
                         foreach (DataGridViewRow row in dataGridReports.Rows)
                         {
                             if (row.IsNewRow)
                                 continue;
 
-                            string line = "";
-
-                            foreach (DataGridViewCell cell in row.Cells)
+                            for (int i = 0; i < row.Cells.Count; i++)
                             {
-                                line += $"{cell.Value}    ";
+                                table.Cell().BorderBottom(1).BorderColor(QuestPDF.Helpers.Colors.Grey.Lighten2)
+                                    .Padding(5).Text(row.Cells[i].Value?.ToString() ?? "");
                             }
-
-                            column.Item().Text(line);
                         }
                     });
 
