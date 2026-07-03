@@ -10,5 +10,6 @@ namespace TaskForge.Data.Repositories
         Task<DailyGoal?> GetByCategoryIdAsync(int categoryId);
         Task AddAsync(DailyGoal goal);
         Task UpdateAsync(DailyGoal goal);
+        Task DeleteAsync(DailyGoal goal);
     }
 }

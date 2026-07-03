@@ -35,5 +35,12 @@ namespace TaskForge.Data.Repositories
             db.DailyGoals.Update(goal);
             await db.SaveChangesAsync();
         }
+
+        public async Task DeleteAsync(DailyGoal goal)
+        {
+            using var db = new AppDbContext();
+            db.DailyGoals.Remove(goal);
+            await db.SaveChangesAsync();
+        }
     }
 }

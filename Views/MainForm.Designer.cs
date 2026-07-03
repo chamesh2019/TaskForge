@@ -77,6 +77,7 @@ namespace TaskForge.Views
             lblGoalsTitle = new Label();
             lstGoals = new ListBox();
             btnSaveGoal = new Button();
+            btnDeleteGoal = new Button();
             numGoalMinutes = new NumericUpDown();
             cmbGoalCategory = new ComboBox();
             panelReports = new Panel();
@@ -554,6 +555,7 @@ namespace TaskForge.Views
             tabPage3.Controls.Add(lblGoalsTitle);
             tabPage3.Controls.Add(lstGoals);
             tabPage3.Controls.Add(btnSaveGoal);
+            tabPage3.Controls.Add(btnDeleteGoal);
             tabPage3.Controls.Add(numGoalMinutes);
             tabPage3.Controls.Add(cmbGoalCategory);
             tabPage3.Location = new Point(4, 27);
@@ -883,6 +885,7 @@ namespace TaskForge.Views
         private ListBox lstIgnoredApps;
         private ListBox lstGoals;
         private Button btnSaveGoal;
+        private Button btnDeleteGoal;
         private NumericUpDown numGoalMinutes;
         private ComboBox cmbGoalCategory;
         private Label lblExistingCategories;

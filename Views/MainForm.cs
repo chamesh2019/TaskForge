@@ -88,6 +88,7 @@ namespace TaskForge.Views
             btnDeleteIgnore.Click += btnDeleteIgnore_Click;
 
             btnSaveGoal.Click += btnSaveGoal_Click;
+            btnDeleteGoal.Click += btnDeleteGoal_Click;
 
             btnExport.Click += btnExport_Click;
             btnImport.Click += btnImport_Click;
@@ -355,19 +356,26 @@ namespace TaskForge.Views
             await LoadCategoriesAsync();
         }
 
-        private async void btnDeleteCategory_Click(object sender, EventArgs e)
+        private async void btnDeleteCategory_Click(object? sender, EventArgs e)
         {
             if (lstCategories.SelectedItem == null)
                 return;
 
             string selected = lstCategories.SelectedItem.ToString()!;
-            bool deleted = await _categoryService.DeleteCategoryAsync(selected);
-            if (!deleted)
+            try
             {
-                MessageBox.Show(this, "The default 'Neutral' category cannot be deleted.", "Delete Category", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                bool deleted = await _categoryService.DeleteCategoryAsync(selected);
+                if (!deleted)
+                {
+                    MessageBox.Show(this, "The default 'Neutral' category cannot be deleted.", "Delete Category", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                await LoadCategoriesAsync();
             }
-            await LoadCategoriesAsync();
+            catch (System.InvalidOperationException ex)
+            {
+                MessageBox.Show(this, ex.Message, "Delete Category", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private async Task LoadIgnoredAppsAsync()
@@ -445,6 +453,21 @@ namespace TaskForge.Views
             catch (Exception ex)
             {
                 MessageBox.Show(this, $"Error saving goal: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void btnDeleteGoal_Click(object? sender, EventArgs e)
+        {
+            if (lstGoals.SelectedItem == null)
+                return;
+
+            var goals = await _goalService.GetGoalsAsync();
+            int selectedIndex = lstGoals.SelectedIndex;
+            if (selectedIndex >= 0 && selectedIndex < goals.Count)
+            {
+                var goalToDelete = goals[selectedIndex];
+                await _goalService.DeleteGoalAsync(goalToDelete.Id);
+                await LoadGoalsAsync();
             }
         }
 
@@ -795,6 +818,18 @@ namespace TaskForge.Views
             grpAddCategory.Controls.Add(txtCategory);
             grpAddCategory.Controls.Add(btnAddCategory);
 
+            btnDeleteCategory.Text = "Delete Selected";
+            btnDeleteCategory.Location = new Point(15, 155);
+            btnDeleteCategory.Size = new Size(grpAddCategory.Width - 30, 35);
+            btnDeleteCategory.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnDeleteCategory.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            btnDeleteCategory.FlatStyle = FlatStyle.Flat;
+            btnDeleteCategory.BackColor = Color.FromArgb(220, 53, 69);
+            btnDeleteCategory.ForeColor = Color.White;
+            btnDeleteCategory.FlatAppearance.BorderSize = 0;
+
+            grpAddCategory.Controls.Add(btnDeleteCategory);
+
             var grpExistingCategories = new GroupBox
             {
                 Text = "Existing Categories",
@@ -804,21 +839,10 @@ namespace TaskForge.Views
             };
 
             lstCategories.Location = new Point(15, 35);
-            lstCategories.Size = new Size(grpExistingCategories.Width - 30, 220);
+            lstCategories.Size = new Size(grpExistingCategories.Width - 30, 280);
             lstCategories.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
-            btnDeleteCategory.Text = "Delete Selected";
-            btnDeleteCategory.Location = new Point(15, 280);
-            btnDeleteCategory.Size = new Size(grpExistingCategories.Width - 30, 35);
-            btnDeleteCategory.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            btnDeleteCategory.Font = new Font("Segoe UI", 9, FontStyle.Bold);
-            btnDeleteCategory.FlatStyle = FlatStyle.Flat;
-            btnDeleteCategory.BackColor = Color.FromArgb(220, 53, 69);
-            btnDeleteCategory.ForeColor = Color.White;
-            btnDeleteCategory.FlatAppearance.BorderSize = 0;
-
             grpExistingCategories.Controls.Add(lstCategories);
-            grpExistingCategories.Controls.Add(btnDeleteCategory);
 
             tbl1.Controls.Add(grpAddCategory, 0, 0);
             tbl1.Controls.Add(grpExistingCategories, 1, 0);
@@ -870,6 +894,18 @@ namespace TaskForge.Views
             grpAddIgnore.Controls.Add(txtIgnoreApp);
             grpAddIgnore.Controls.Add(btnAddIgnore);
 
+            btnDeleteIgnore.Text = "Delete Selected";
+            btnDeleteIgnore.Location = new Point(15, 155);
+            btnDeleteIgnore.Size = new Size(grpAddIgnore.Width - 30, 35);
+            btnDeleteIgnore.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnDeleteIgnore.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            btnDeleteIgnore.FlatStyle = FlatStyle.Flat;
+            btnDeleteIgnore.BackColor = Color.FromArgb(220, 53, 69);
+            btnDeleteIgnore.ForeColor = Color.White;
+            btnDeleteIgnore.FlatAppearance.BorderSize = 0;
+
+            grpAddIgnore.Controls.Add(btnDeleteIgnore);
+
             var grpIgnoredApps = new GroupBox
             {
                 Text = "Ignored Applications",
@@ -879,21 +915,10 @@ namespace TaskForge.Views
             };
 
             lstIgnoredApps.Location = new Point(15, 35);
-            lstIgnoredApps.Size = new Size(grpIgnoredApps.Width - 30, 220);
+            lstIgnoredApps.Size = new Size(grpIgnoredApps.Width - 30, 280);
             lstIgnoredApps.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
-            btnDeleteIgnore.Text = "Remove Selected";
-            btnDeleteIgnore.Location = new Point(15, 280);
-            btnDeleteIgnore.Size = new Size(grpIgnoredApps.Width - 30, 35);
-            btnDeleteIgnore.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            btnDeleteIgnore.Font = new Font("Segoe UI", 9, FontStyle.Bold);
-            btnDeleteIgnore.FlatStyle = FlatStyle.Flat;
-            btnDeleteIgnore.BackColor = Color.FromArgb(220, 53, 69);
-            btnDeleteIgnore.ForeColor = Color.White;
-            btnDeleteIgnore.FlatAppearance.BorderSize = 0;
-
             grpIgnoredApps.Controls.Add(lstIgnoredApps);
-            grpIgnoredApps.Controls.Add(btnDeleteIgnore);
 
             tbl2.Controls.Add(grpAddIgnore, 0, 0);
             tbl2.Controls.Add(grpIgnoredApps, 1, 0);
@@ -957,6 +982,18 @@ namespace TaskForge.Views
             grpSetGoal.Controls.Add(lblGoalMinutes);
             grpSetGoal.Controls.Add(numGoalMinutes);
             grpSetGoal.Controls.Add(btnSaveGoal);
+
+            btnDeleteGoal.Text = "Delete Selected";
+            btnDeleteGoal.Location = new Point(15, 235);
+            btnDeleteGoal.Size = new Size(grpSetGoal.Width - 30, 35);
+            btnDeleteGoal.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnDeleteGoal.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            btnDeleteGoal.FlatStyle = FlatStyle.Flat;
+            btnDeleteGoal.BackColor = Color.FromArgb(220, 53, 69);
+            btnDeleteGoal.ForeColor = Color.White;
+            btnDeleteGoal.FlatAppearance.BorderSize = 0;
+
+            grpSetGoal.Controls.Add(btnDeleteGoal);
 
             var grpSavedGoals = new GroupBox
             {
