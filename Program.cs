@@ -26,7 +26,7 @@ namespace TaskForge
             var sessionRepo = new TrackedSessionRepository();
             var appCategoryRepo = new AppCategoryRepository();
 
-            var categoryService = new CategoryService(categoryRepo);
+            var categoryService = new CategoryService(categoryRepo, appCategoryRepo);
             var ignoredAppService = new IgnoredAppService(ignoredAppRepo);
             var notificationService = new NotificationService();
             var classificationService = new ClassificationService(categoryRepo, appCategoryRepo);

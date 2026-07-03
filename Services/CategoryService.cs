@@ -8,10 +8,12 @@ namespace TaskForge.Services
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepo;
+        private readonly IAppCategoryRepository _appCategoryRepo;
 
-        public CategoryService(ICategoryRepository categoryRepo)
+        public CategoryService(ICategoryRepository categoryRepo, IAppCategoryRepository appCategoryRepo)
         {
             _categoryRepo = categoryRepo;
+            _appCategoryRepo = appCategoryRepo;
         }
 
         public Task<List<Category>> GetAllCategoriesAsync()
@@ -42,6 +44,12 @@ namespace TaskForge.Services
             if (cleanName.Equals("Neutral", System.StringComparison.OrdinalIgnoreCase))
             {
                 return false; // Prevent deleting default category
+            }
+
+            var apps = await _appCategoryRepo.GetAppNamesByCategoryNameAsync(cleanName);
+            if (apps != null && apps.Count > 0)
+            {
+                throw new System.InvalidOperationException($"The category '{cleanName}' cannot be deleted because there are applications assigned to it.");
             }
 
             var category = await _categoryRepo.GetByNameAsync(cleanName);

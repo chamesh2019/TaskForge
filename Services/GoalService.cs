@@ -116,5 +116,15 @@ namespace TaskForge.Services
                 }
             }
         }
+
+        public async Task DeleteGoalAsync(int goalId)
+        {
+            var goals = await _goalRepo.GetAllWithCategoriesAsync();
+            var goal = goals.FirstOrDefault(g => g.Id == goalId);
+            if (goal != null)
+            {
+                await _goalRepo.DeleteAsync(goal);
+            }
+        }
     }
 }
